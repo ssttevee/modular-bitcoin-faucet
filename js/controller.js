@@ -1,8 +1,10 @@
-var btcFaucetApp = angular.module('btcFaucetApp',[]);
+var btcFaucetApp = angular.module('btcFaucetApp',['ngCookies']);
 
-btcFaucetApp.controller('MainFaucetCtrl', function($scope) {
+btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$cookies', function($scope, $cookies) {
+    $scope.btcAddress = $cookies.btcAddress;
+    $scope.satBalance = $cookies.satBalance || 0;
     $scope.startSpin = function() {
-        $scope.intervalId = setInterval($scope.spin, 100)
+        $scope.intervalId = setInterval($scope.spin, 100);
         $scope.spinningDown = false;
     };
     $scope.spin = function() {
@@ -41,4 +43,4 @@ btcFaucetApp.controller('MainFaucetCtrl', function($scope) {
     $scope.stopSpin = function() {
         if(!$scope.spinningDown) $scope.spinDown();
     };
-});
+}]);

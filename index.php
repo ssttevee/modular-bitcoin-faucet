@@ -3,6 +3,7 @@
     <title>All The Satoshi!</title>
     <link href="style.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
     <script src="js/controller.js" type="application/javascript"></script>
 </head>
 <body>
@@ -15,13 +16,14 @@
 <div class="content">
     <div class="ad left"></div>
     <div class="ad right"></div>
-    <div class="middle left" ng-controller="MainFaucetCtrl" ng-init="checkAddress">
+    <div class="middle left" ng-controller="MainFaucetCtrl">
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
             <form method="post" action="login.php">
                 <input type="text" name="btcAddress"/>
                 <input type="submit" value="Login!"/>
             </form>
         <?php } else { ?>
+            <div id="top-bar"><span>Balance: <b>{{satBalance}}</b> satoshi</span><span><b>{{btcAddress}}</b></span></div>
             <div id="rng-spinner" ng-init="startSpin()">0000</div>
             <div id="rng-value">0 satoshi</div>
             <button id="rng-stop" ng-click="stopSpin()">Stop</button>
