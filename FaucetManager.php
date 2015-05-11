@@ -6,7 +6,8 @@ class Manager {
     private $db;
 
     function __construct($btcAddress) {
-        $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@127.0.0.1:27017/db');
+//        $mongo = new MongoClient();
+        $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
         $this->db = $mongo->btcfaucet;
         $this->btcAddr = $btcAddress;
     }
