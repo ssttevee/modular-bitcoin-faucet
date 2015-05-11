@@ -1,6 +1,4 @@
 <?php
-namespace ssttevee\Faucet;
-
 class Manager {
     private $btcAddr;
     private $db;

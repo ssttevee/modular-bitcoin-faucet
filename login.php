@@ -3,7 +3,6 @@ require 'vendor/autoload.php';
 require 'FaucetManager.php';
 
 use \LinusU\Bitcoin\AddressValidator;
-use \ssttevee\Faucet\Manager;
 
 if(isset($_POST['btcAddress'])) {
     if(AddressValidator::isValid($_POST['btcAddress'])) {
