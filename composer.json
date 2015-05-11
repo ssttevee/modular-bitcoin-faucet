@@ -1,0 +1,15 @@
+{
+  "name": "ssttevee/bitcoin_faucet",
+  "description": "description_text",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Steve Lam",
+      "email": "steve.lam@scout138.com"
+    }
+  ],
+  "require": {
+    "linusu/bitcoin-address-validator": "v0.1.2"
+  }
+}

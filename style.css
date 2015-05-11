@@ -1,0 +1,63 @@
+* {
+    box-sizing: border-box;
+}
+.ad {
+    position: relative;
+}
+.ad::before {
+    content: "Please enable ads to keep this website online :(";
+    color: #aaaaaa;
+    text-align: center;
+    line-height: 90px;
+    font-size: 16pt;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: #cccccc solid 1px;
+    background: #dddddd;
+    z-index: -1;
+}
+.header {
+    margin: 0 auto;
+    height: 100px;
+    width: 1000px;
+}
+.header .logo {
+    float: left;
+    width: 272px;
+}
+.header .ad {
+    float: left;
+    margin-top: 5px;
+    height: 90px;
+    width: 728px;
+}
+.content {
+    margin: 0 auto;
+    width: 1200px;
+}
+.content .ad {
+    width: 300px;
+    min-height: 600px;
+}
+.content .left {
+    float: left;
+}
+.content .right {
+    float: right;
+}
+.content .middle {
+    float: left;
+    width: 600px;
+    padding: 10px;
+    text-align: center;
+}
+
+#rng-spinner {
+    font-size: 60pt;
+}
+#rng-stop {
+    font-size: 26pt;
+}
