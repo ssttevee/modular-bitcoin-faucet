@@ -35,16 +35,25 @@ body {
     margin: 0 auto;
     height: 100px;
     width: 1000px;
+    position: relative;
+    margin-bottom: 10px;
 }
 .header .logo {
     float: left;
-    width: 272px;
+    display: block;
+    width: 325px;
+    height: 100px;
+    position: absolute;
+    left: 0;
+    background-image: url(logo.png);
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 .header .ad {
-    float: left;
     margin-top: 5px;
     height: 90px;
     width: 728px;
+    float: right;
 }
 .content {
     margin: 0 auto;
@@ -65,6 +74,28 @@ body {
     width: 600px;
     padding: 10px;
     text-align: center;
+    position: relative;
+    padding-top: 32px;
+}
+
+#top-bar {
+    height: 32px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+#top-bar span {
+    float: right;
+    margin-right: 5px;
+}
+#top-bar span:first-child {
+    margin-right: 10px;
+}
+
+#top-bar span:not(:first-child)::after {
+    content: "|";
+    margin-left: 5px;
 }
 
 #rng-spinner {

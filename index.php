@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo">All The Satoshi!</div>
+    <a href="./" class="logo"></a>
     <div class="ad">
         <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=1F4DU7F5AB57A" style="overflow:hidden;width:728px;height:90px;"></iframe>
     </div>
