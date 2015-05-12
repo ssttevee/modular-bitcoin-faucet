@@ -107,10 +107,10 @@ require "./lib/FaucetManager.php"; ?>
             <?php } ?>
             <div id="captcha-container" ng-show="showCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
-                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=6EM7MCW8V4V8H" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a><br/>
-                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=6EM7MCW8V4V8H" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/><br/>
-                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=NTV8MN904MZ31" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/>
-                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=NTV8MN904MZ31" target="_blank" style="margin: 0 auto;">&#8657; Your Ad Here &#8657;</a><br/><br/><br/>
+                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a><br/>
+                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=TU5BRHOMMS3FI" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/><br/>
+                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=1VSG0O1G1JA3P" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/>
+                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=1VSG0O1G1JA3P" target="_blank" style="margin: 0 auto;">&#8657; Your Ad Here &#8657;</a><br/><br/><br/>
                 <button id="rng-claim" ng-click="claimSpin()" ng-show="captchaShowClaim">Claim</button>
                 <button id="rng-claim" ng-click="payout()" ng-show="captchaShowPayout">Payout</button>
             </div>
