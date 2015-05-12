@@ -23,7 +23,7 @@ require "./lib/FaucetManager.php"; ?>
 <body>
 <div class="header">
     <a href="./" class="logo"></a>
-    <div class="ad leaderboard"><?php AdManager::insertBitClixAd('11719', true); ?></div>
+    <div class="ad leaderboard"><?php AdManager::insertBitClixAd('11719'); ?></div>
 </div>
 <div class="content">
     <div class="ad skyscraper left"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '8882945326'); ?></div>
