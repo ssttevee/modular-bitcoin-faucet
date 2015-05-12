@@ -4,10 +4,11 @@ ini_set('display_errors', 1);
 
 if(isset($_GET['ref'])) setcookie('ref', $_GET['ref'], time() + 3600, '/');
 
+require "./lib/AdManager.php";
 require "./lib/FaucetManager.php"; ?>
 <html ng-app="btcFaucetApp">
 <head>
-    <title>All The Satoshi!</title>
+    <title>All The Satoshi! - Earn Free Bitcoins!</title>
     <link href="style.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
@@ -22,37 +23,11 @@ require "./lib/FaucetManager.php"; ?>
 <body>
 <div class="header">
     <a href="./" class="logo"></a>
-    <div class="ad">
-        <iframe scrolling="no" style="border: 0; width: 728px; height: 90px;" src="//ads.bcsyndication.com/get.php?s=11719"></iframe>
-    </div>
+    <div class="ad leaderboard"><?php AdManager::insertBitClixAd('11719', true); ?></div>
 </div>
 <div class="content">
-    <div class="ad left">
-        <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- AllTheSatoshi Left Skyscraper -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:300px;height:600px"
-             data-ad-client="ca-pub-5885519961820058"
-             data-ad-slot="8882945326"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        <?php } ?>
-    </div>
-    <div class="ad right">
-        <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
-            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- AllTheSatoshi Right Skyscraper -->
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:300px;height:600px"
-                 data-ad-client="ca-pub-5885519961820058"
-                 data-ad-slot="1220077720"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        <?php } ?>
-    </div>
+    <div class="ad skyscraper left"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '8882945326'); ?></div>
+    <div class="ad skyscraper right"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '1220077720'); ?></div>
     <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . $mgr->getLastSpin() . ', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
             <form method="post" action="./cgi-bin/login.php">
@@ -74,19 +49,7 @@ require "./lib/FaucetManager.php"; ?>
             <?php } ?>
             <?php if($mgr->getRemainingTries() < 1) { ?>
                 Time until next claim
-                <div style="width:336px; height:280px; margin: 0 auto;">
-                    <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
-                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                        <!-- AllTheSatoshi Middle -->
-                        <ins class="adsbygoogle"
-                             style="display:inline-block;width:336px;height:280px"
-                             data-ad-client="ca-pub-5885519961820058"
-                             data-ad-slot="5929478925"></ins>
-                        <script>
-                            (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script>
-                    <?php } ?>
-                </div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '5929478925'); ?></div>
                 <div ng-init="timeLeft = <?= $mgr->getWaitTime() ?>;startCountDown();">
                     <h1>{{secondsToStr(timeLeft)}}</h1>
                 </div>
@@ -100,19 +63,7 @@ require "./lib/FaucetManager.php"; ?>
                 <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
-                <div style="width:336px; height:280px; margin: 0 auto;">
-                    <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
-                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                    <!-- AllTheSatoshi Middle -->
-                    <ins class="adsbygoogle"
-                         style="display:inline-block;width:336px;height:280px"
-                         data-ad-client="ca-pub-5885519961820058"
-                         data-ad-slot="5929478925"></ins>
-                    <script>
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                    <?php } ?>
-                </div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '5929478925'); ?></div>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
@@ -120,9 +71,9 @@ require "./lib/FaucetManager.php"; ?>
             <?php } ?>
             <div id="captcha-container" ng-show="showCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
-                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a><br/>
-                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=TU5BRHOMMS3FI" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/><br/>
-                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=1VSG0O1G1JA3P" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/>
+                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a>
+                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertAdbitAd('TU5BRHOMMS3FI'); ?></div><br/>
+                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertAdbitAd('1VSG0O1G1JA3P'); ?></div>
                 <a href="//adbit.co/?a=Advertise&b=View_Bid&c=1VSG0O1G1JA3P" target="_blank" style="margin: 0 auto;">&#8657; Your Ad Here &#8657;</a><br/><br/><br/>
                 <button id="rng-claim" ng-click="claimSpin()" ng-show="captchaShowClaim">Claim</button>
                 <button id="rng-claim" ng-click="payout()" ng-show="captchaShowPayout">Payout</button>

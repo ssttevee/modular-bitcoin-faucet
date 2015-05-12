@@ -16,12 +16,9 @@ body {
 .ad {
     position: relative;
 }
-.ad::before {
+.ad:empty::before {
     content: "";
     color: #aaaaaa;
-    text-align: center;
-    line-height: 90px;
-    font-size: 16pt;
     position: absolute;
     top: 0;
     left: 0;
@@ -29,7 +26,22 @@ body {
     right: 0;
     border: #cccccc solid 1px;
     background: #dddddd;
-    z-index: -1;
+}
+.ad.leaderboard {
+    height: 90px;
+    width: 728px;
+}
+.ad.skyscraper {
+    width: 300px;
+    height: 600px;
+}
+.ad.banner {
+    width: 468px;
+    height: 60px;
+}
+.ad.large-rectangle {
+    width: 336px;
+    height: 280px;
 }
 .header {
     margin: 0 auto;
@@ -39,7 +51,6 @@ body {
     margin-bottom: 10px;
 }
 .header .logo {
-    float: left;
     display: block;
     width: 325px;
     height: 100px;
@@ -50,18 +61,13 @@ body {
     background-size: contain;
 }
 .header .ad {
-    margin-top: 5px;
-    height: 90px;
-    width: 728px;
-    float: right;
+    position: absolute;
+    top: 5px;
+    right: 0;
 }
 .content {
     margin: 0 auto;
     width: 1200px;
-}
-.content .ad {
-    width: 300px;
-    min-height: 600px;
 }
 .content .left {
     float: left;
