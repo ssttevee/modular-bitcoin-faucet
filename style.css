@@ -17,7 +17,7 @@ body {
     position: relative;
 }
 .ad::before {
-    content: "Please enable ads to keep this website online :(";
+    content: "";
     color: #aaaaaa;
     text-align: center;
     line-height: 90px;
