@@ -33,6 +33,10 @@ class Manager {
         die("failed to add new user");
     }
 
+    function getAccount() {
+        return $this->db->users->findOne($this->filter);
+    }
+
     function getBalance() {
         $cursor = $this->db->users->findOne($this->filter, array('satbalance'));
 
@@ -121,9 +125,23 @@ class Manager {
     }
 
     function addBalance($amount) {
-        $cursor = $this->db->users->findOne($this->filter, array('satbalance','alltimebal'));
+        $cursor = $this->db->users->findOne($this->filter, array('satbalance','alltimebal','referrer'));
         $cursor["satbalance"] += $amount;
         $cursor["alltimebal"] += $amount;
         $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "alltimebal" => $cursor["alltimebal"])));
+        $this->rewardReferrer($cursor["referrer"], $amount);
+    }
+
+    function rewardReferrer($referrer, $amount) {
+        $amount *= $this->config["referralReward"];
+        if(isset($referrer) && strlen($referrer) > 0) {
+            $cursor = $this->db->users->findOne(array('address' => $referrer), array('satbalance','alltimebal','refreward'));
+            if($cursor == null) return;
+            if(!isset($cursor["refreward"])) $cursor["refreward"] = 0;
+            $cursor["satbalance"] += $amount;
+            $cursor["alltimebal"] += $amount;
+            $cursor["refreward"] += $amount;
+            $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "alltimebal" => $cursor["alltimebal"], "refreward" => $cursor["refreward"])));
+        }
     }
 }

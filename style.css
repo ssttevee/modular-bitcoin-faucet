@@ -148,3 +148,10 @@ body {
 .g-recaptcha > div > div {
     margin: 50px auto 25px auto;
 }
+
+#ref-url {
+    border: #cccccc solid 1px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}

@@ -2,10 +2,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if(isset($_GET['ref'])) setcookie('ref', $_GET['ref'], time() + 3600, '/');
-
 require "./lib/AdManager.php";
-require "./lib/FaucetManager.php"; ?>
+require "./lib/FaucetManager.php";
+
+if(isset($_GET['r'])) {
+    if((new Manager($_GET['r']))->getAccount() != null) setcookie('ref', $_GET['r'], time() + 3600, '/');
+} ?>
 <html ng-app="btcFaucetApp">
 <head>
     <title>All The Satoshi! - Earn Free Bitcoins!</title>
@@ -68,7 +70,11 @@ require "./lib/FaucetManager.php"; ?>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
                 <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button>
-            <?php } ?>
+            <?php } ?><br><br>
+            <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertBitClixAd('11724'); ?></div>
+            <h2>Refer and get 10% of every dispense!</h2>
+            Your referral link:<br>
+            <input id="ref-url" type="text" value="http://<?= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>?r={{btcAddress}}" onclick="$(this).select();">
             <div id="captcha-container" ng-show="showCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
                 <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a>
