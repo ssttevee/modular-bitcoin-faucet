@@ -89,11 +89,12 @@ class Manager {
             "fractal" => 'return $base + ($max + $max/$chance)/($x/5 + 1) - $max/$chance;',
             "radical" => '$max /= 20;return $base - sqrt($max*$max/$chance*$x) + $max;',
         );
-        $cursor = $this->db->users->findOne($this->filter, array('lastSpin.number'));
+        $cursor = $this->db->users->findOne($this->filter, array('claims','lastSpin.number'));
         if(!isset($cursor["lastSpin"]) || $cursor["lastSpin"]["number"] == null) return array("added" => null, "balance" => $this->getBalance());
         else {
+            if(!isset($cursor["claims"])) $cursor["claims"] = 0;
             $x = $cursor["lastSpin"]["number"];
-            $this->db->users->update($this->filter, array('$set' => array('lastSpin.number' => null,'lastSpin.tries' => $this->config["maxSpins"])));
+            $this->db->users->update($this->filter, array('$set' => array('claims' => ($cursor["claims"] + 1),'lastSpin.number' => null,'lastSpin.tries' => $this->config["maxSpins"])));
             $amount = eval($formulas[$curve]);
             $this->addBalance($amount);
             return array("added" => $amount, "balance" => $this->getBalance());
