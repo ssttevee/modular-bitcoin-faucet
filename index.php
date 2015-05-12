@@ -27,7 +27,19 @@ require "./lib/FaucetManager.php"; ?>
     </div>
 </div>
 <div class="content">
-    <div class="ad left"></div>
+    <div class="ad left">
+        <?php if($_SERVER['REMOTE_ADDR'] != '23.16.160.33') { ?>
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- AllTheSatoshi Left Skyscraper -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:300px;height:600px"
+             data-ad-client="ca-pub-5885519961820058"
+             data-ad-slot="8882945326"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <?php } ?>
+    </div>
     <div class="ad right"></div>
     <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . $mgr->getLastSpin() . ', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
@@ -54,11 +66,28 @@ require "./lib/FaucetManager.php"; ?>
                     <h1>{{secondsToStr(timeLeft)}}</h1>
                 </div>
             <?php } else { ?>
+                <h1>Welcome to All The Satoshi Beta Faucet.</h1>
+                The random numbers below is what guages how many satoshis you can claim.  The lower the number, the more satoshi you will get.  The curve depicts how much satoshi you can get from your number.  The fractal curve can give you up to 2000 satoshi, but at an incredibly low chance.  The Radial curve will only give you, at most, 250 satoshi, but you get a better rate of satoshi if you get high number.
+                <br>
+                <br>
                 Pick a curve: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <input id="fractal-formula" type="radio" name="formula" value="fractal" ng-model="formula" ng-disabled="spinningDown"><label for="fractal-formula">Fractal</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
+                <div style="width:336px; height:280px; margin: 0 auto;">
+                    <?php if($_SERVER['REMOTE_ADDR'] != '23.16.160.33') { ?>
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- AllTheSatoshi Middle -->
+                    <ins class="adsbygoogle"
+                         style="display:inline-block;width:336px;height:280px"
+                         data-ad-client="ca-pub-5885519961820058"
+                         data-ad-slot="5929478925"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    <?php } ?>
+                </div>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
