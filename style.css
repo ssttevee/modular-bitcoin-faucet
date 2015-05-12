@@ -129,3 +129,16 @@ body {
 #rng-stop {
     font-size: 26pt;
 }
+
+#captcha-container {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f5f5f5;
+}
+
+.g-recaptcha > div > div {
+    margin: 50px auto 25px auto;
+}

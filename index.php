@@ -12,6 +12,7 @@ require "./lib/FaucetManager.php"; ?>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="js/controller.js" type="application/javascript"></script>
     <?php if(isset($_COOKIE['btcAddress'])) {
         $mgr = new Manager($_COOKIE['btcAddress']);
@@ -35,7 +36,7 @@ require "./lib/FaucetManager.php"; ?>
                 <input type="submit" value="Login!"/>
             </form>
         <?php } else { ?>
-            <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="payout();"><b>Paytoshi</b></a> <a href="javascript:void();"></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
+            <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;"><b>Paytoshi</b></a> <a href="javascript:void();"></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
             <?php if(isset($_POST['event'])) { ?>
                 <?php if($_POST['event'] == 'paidout' && isset($_POST['error'])) { ?>
                     <div class="notice red">Error: <?= $_POST['error'] ?></div>
@@ -61,8 +62,13 @@ require "./lib/FaucetManager.php"; ?>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
-                <button id="rng-claim" ng-click="claimSpin()" ng-show="spinDownDone">Claim</button>
+                <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button>
             <?php } ?>
+            <div id="captcha-container" ng-show="showCaptcha">
+                <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
+                <button id="rng-claim" ng-click="claimSpin()" ng-show="captchaShowClaim">Claim</button>
+                <button id="rng-claim" ng-click="payout()" ng-show="captchaShowPayout">Payout</button>
+            </div>
         <?php } ?>
     </div>
 </div>

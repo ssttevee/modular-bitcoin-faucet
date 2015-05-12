@@ -7,8 +7,8 @@ class Manager {
     public $config;
 
     function __construct($btcAddress, $config = array("baseAmt" => 50, "maxBonusAmt" => 2000, "bonusChance" => 8000, "spinInterval" => 600, "maxSpins" => 3, "paytoshiApiKey" => "5yv5hbjulxthon78tgs6jq2d87q6ukbblhv7nbhuh8b383bi4l")) {
-//        $mongo = new MongoClient();
-        $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
+        $mongo = new MongoClient();
+//        $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
         $this->db = $mongo->btcfaucet;
         $this->btcAddr = $btcAddress;
         $this->config = $config;

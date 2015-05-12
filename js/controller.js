@@ -120,7 +120,7 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
         }
     };
     $scope.claimSpin = function() {
-        $http.post("./ajax/spin.php",{claim:true,curve:$scope.formula}).success(function(data) {
+        $http.post("./ajax/spin.php",{claim:true,curve:$scope.formula,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
             var $form = $('<form method="post"><input type="hidden" name="event" value="satoshiclaimed"><input type="hidden" name="amount" value="' + data['added'] + '"></form>');
             if(data['added'] == null) {
                 $form.append($('<input type="hidden" name="error" value="Nothing to claim">'));
@@ -136,7 +136,7 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
         if(!$scope.spinningDown) $scope.spinDown();
     };
     $scope.payout = function() {
-        $http.post("./ajax/payout.php").success(function(data) {
+        $http.post("./ajax/payout.php",{'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
             var $form = $('<form method="post"><input type="hidden" name="event" value="paidout"><input type="hidden" name="amount" value="' + data['amount'] + '"></form>');
             if(data['amount'] == null) {
                 $form.append($('<input type="hidden" name="error" value="' + data['message'] + '">'));
