@@ -63,7 +63,7 @@ class Manager {
     function spin() {
         $cursor = $this->db->users->findOne($this->filter, array('lastSpin'));
 
-        if(!$cursor["lastSpin"]) {
+        if(!isset($cursor["lastSpin"])) {
             $cursor["lastSpin"]["tries"] = 0;
         } else if($cursor["lastSpin"]["time"] > time() - $this->config["spinInterval"] && $cursor["lastSpin"]["tries"] >= $this->config["maxSpins"] ||
             $cursor["lastSpin"]["time"] > time() - $this->config["spinInterval"] && $cursor["lastSpin"]["number"] == null) {
@@ -75,7 +75,7 @@ class Manager {
         $cursor["lastSpin"]["number"] = mt_rand(0, $this->config["bonusChance"]);
         $cursor["lastSpin"]["time"] = time();
         $cursor["lastSpin"]["tries"]++;
-        $this->db->users->update($this->filter, array('$set' => $cursor));
+        $this->db->users->update($this->filter, array('$set' => array("lastSpin" => $cursor["lastSpin"])));
 
         return array("spin" => $cursor["lastSpin"]["number"], "tries" => $this->config["maxSpins"] - $cursor["lastSpin"]["tries"]);
     }
@@ -114,7 +114,7 @@ class Manager {
         $cursor = $this->db->users->findOne($this->filter, array('satbalance','satwithdrawn'));
         $cursor["satbalance"] -= $res["amount"];
         $cursor["satwithdrawn"] += $res["amount"];
-        $this->db->users->update($this->filter, array('$set' => $cursor));
+        $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "satwithdrawn" => $cursor["satwithdrawn"])));
 
         return $res;
     }
@@ -123,6 +123,6 @@ class Manager {
         $cursor = $this->db->users->findOne($this->filter, array('satbalance','alltimebal'));
         $cursor["satbalance"] += $amount;
         $cursor["alltimebal"] += $amount;
-        $this->db->users->update($this->filter, array('$set' => $cursor));
+        $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "alltimebal" => $cursor["alltimebal"])));
     }
 }
