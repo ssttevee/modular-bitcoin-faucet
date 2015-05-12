@@ -23,7 +23,7 @@ require "./lib/FaucetManager.php"; ?>
 <div class="header">
     <a href="./" class="logo"></a>
     <div class="ad">
-        <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=1F4DU7F5AB57A" style="overflow:hidden;width:728px;height:90px;"></iframe>
+        <iframe scrolling="no" style="border: 0; width: 728px; height: 90px;" src="//ads.bcsyndication.com/get.php?s=11719"></iframe>
     </div>
 </div>
 <div class="content">
