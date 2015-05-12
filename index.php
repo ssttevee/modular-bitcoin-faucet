@@ -25,17 +25,20 @@ if(isset($_GET['r'])) {
 <body>
 <div class="header">
     <a href="./" class="logo"></a>
-    <div class="ad leaderboard"><?php AdManager::insertBitClixAd('11719'); ?></div>
+    <div class="ad leaderboard"><?php AdManager::insert('bitclix','11719'); ?></div>
 </div>
 <div class="content">
-    <div class="ad skyscraper left"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '8882945326'); ?></div>
-    <div class="ad skyscraper right"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '1220077720'); ?></div>
+    <div class="ad skyscraper left"><?php AdManager::insert('adsense','8882945326'); ?></div>
+    <div class="ad skyscraper right"><?php AdManager::insert('adsense','1220077720'); ?></div>
     <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . $mgr->getLastSpin() . ', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
+            <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div><br>
             <form method="post" action="./cgi-bin/login.php">
-                <input type="text" name="btcAddress"/>
+                <label for="bitcoin-address">Your BitCoin Address: </label>
+                <input id="bitcoin-address" type="text" name="btcAddress"/>
                 <input type="submit" value="Login!"/>
             </form>
+            <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
         <?php } else { ?>
             <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;"><b>Paytoshi</b></a> <a href="javascript:void();"></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
             <?php if(isset($_POST['event'])) { ?>
@@ -51,7 +54,7 @@ if(isset($_GET['r'])) {
             <?php } ?>
             <?php if($mgr->getRemainingTries() < 1) { ?>
                 Time until next claim
-                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '5929478925'); ?></div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div>
                 <div ng-init="timeLeft = <?= $mgr->getWaitTime() ?>;startCountDown();">
                     <h1>{{secondsToStr(timeLeft)}}</h1>
                 </div>
@@ -65,21 +68,21 @@ if(isset($_GET['r'])) {
                 <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
-                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insertGoogleAd('ca-pub-5885519961820058', '5929478925'); ?></div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
                 <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button>
             <?php } ?><br><br>
-            <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertBitClixAd('11724'); ?></div>
+            <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
             <h2>Refer and get 10% of every dispense!</h2>
             Your referral link:<br>
             <input id="ref-url" type="text" value="http://<?= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>?r={{btcAddress}}" onclick="$(this).select();">
             <div id="captcha-container" ng-show="showCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
                 <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a>
-                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertAdbitAd('TU5BRHOMMS3FI'); ?></div><br/>
-                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insertAdbitAd('1VSG0O1G1JA3P'); ?></div>
+                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('adbit','TU5BRHOMMS3FI'); ?></div><br/>
+                <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('adbit','1VSG0O1G1JA3P'); ?></div>
                 <a href="//adbit.co/?a=Advertise&b=View_Bid&c=1VSG0O1G1JA3P" target="_blank" style="margin: 0 auto;">&#8657; Your Ad Here &#8657;</a><br/><br/><br/>
                 <button id="rng-claim" ng-click="claimSpin()" ng-show="captchaShowClaim">Claim</button>
                 <button id="rng-claim" ng-click="payout()" ng-show="captchaShowPayout">Payout</button>
