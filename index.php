@@ -74,6 +74,19 @@ require "./lib/FaucetManager.php"; ?>
             <?php } ?>
             <?php if($mgr->getRemainingTries() < 1) { ?>
                 Time until next claim
+                <div style="width:336px; height:280px; margin: 0 auto;">
+                    <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
+                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                        <!-- AllTheSatoshi Middle -->
+                        <ins class="adsbygoogle"
+                             style="display:inline-block;width:336px;height:280px"
+                             data-ad-client="ca-pub-5885519961820058"
+                             data-ad-slot="5929478925"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    <?php } ?>
+                </div>
                 <div ng-init="timeLeft = <?= $mgr->getWaitTime() ?>;startCountDown();">
                     <h1>{{secondsToStr(timeLeft)}}</h1>
                 </div>
