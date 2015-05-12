@@ -28,7 +28,7 @@ require "./lib/FaucetManager.php"; ?>
 </div>
 <div class="content">
     <div class="ad left">
-        <?php if($_SERVER['REMOTE_ADDR'] != '23.16.160.33') { ?>
+        <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <!-- AllTheSatoshi Left Skyscraper -->
         <ins class="adsbygoogle"
@@ -40,7 +40,19 @@ require "./lib/FaucetManager.php"; ?>
         </script>
         <?php } ?>
     </div>
-    <div class="ad right"></div>
+    <div class="ad right">
+        <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- AllTheSatoshi Right Skyscraper -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:300px;height:600px"
+                 data-ad-client="ca-pub-5885519961820058"
+                 data-ad-slot="1220077720"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        <?php } ?>
+    </div>
     <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . $mgr->getLastSpin() . ', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
             <form method="post" action="./cgi-bin/login.php">
@@ -76,7 +88,7 @@ require "./lib/FaucetManager.php"; ?>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
                 <div style="width:336px; height:280px; margin: 0 auto;">
-                    <?php if($_SERVER['REMOTE_ADDR'] != '23.16.160.33') { ?>
+                    <?php if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') { ?>
                     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                     <!-- AllTheSatoshi Middle -->
                     <ins class="adsbygoogle"
@@ -95,6 +107,10 @@ require "./lib/FaucetManager.php"; ?>
             <?php } ?>
             <div id="captcha-container" ng-show="showCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
+                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=6EM7MCW8V4V8H" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a><br/>
+                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=6EM7MCW8V4V8H" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/><br/>
+                <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=NTV8MN904MZ31" style="overflow:hidden;width:468px;height:60px;margin: 0 auto;"></iframe><br/>
+                <a href="//adbit.co/?a=Advertise&b=View_Bid&c=NTV8MN904MZ31" target="_blank" style="margin: 0 auto;">&#8657; Your Ad Here &#8657;</a><br/><br/><br/>
                 <button id="rng-claim" ng-click="claimSpin()" ng-show="captchaShowClaim">Claim</button>
                 <button id="rng-claim" ng-click="payout()" ng-show="captchaShowPayout">Payout</button>
             </div>
