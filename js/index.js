@@ -1,4 +1,4 @@
-btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$cookies', function($scope, $http) {
+btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', function($scope, $http, $notice) {
 
     $scope.init = function(lastSpin,formula,triesLeft,config) {
         $scope.lastSpin = lastSpin;
@@ -45,17 +45,21 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$cookies', fun
     $scope.spinDown = function() {
         if(!$scope.spinningDown) {
             $http.post("./ajax/spin.php", {curve:$scope.formula}).success(function(data) {
-                if(!data.spin) {
-                    angular.element(document.querySelector('#rng-spinner')).text('zzzz');
-                    angular.element(document.querySelector('#rng-value')).text('You\'ve run out of tries');
+                if(!data.success) {
+                    $notice.getEventForm({
+                        event: 'error',
+                        message: data['message'],
+                    }).submit();
                 } else {
                     $scope.number = data.spin;
                     $scope.remainingSpins = data.tries;
                 }
             }).error(function(data) {
                 console.log(data);
-                angular.element(document.querySelector('#rng-spinner')).text('X.X');
-                angular.element(document.querySelector('#rng-value')).text('Something went wrong...');
+                $notice.getEventForm({
+                    event: 'error',
+                    message: 'An unknown error has occurred: ' + data,
+                }).submit();
             });
             $scope.spinDownCounter = 0;
             $scope.spinningDown = true;
@@ -75,15 +79,16 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$cookies', fun
     };
     $scope.claimSpin = function() {
         $http.post("./ajax/spin.php",{claim:true,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
-            var $form = $('<form method="post"><input type="hidden" name="event" value="satoshiclaimed"><input type="hidden" name="amount" value="' + data['added'] + '"></form>');
-            if(data['added'] == null) {
-                $form.append($('<input type="hidden" name="error" value="Nothing to claim">'));
-            }
-            $form.submit();
+            $notice.getEventForm({
+                event: data['success'] ? 'success' : 'error',
+                message: data['message'],
+            }).submit();
         }).error(function(data) {
             console.log(data);
-            angular.element(document.querySelector('#rng-spinner')).text('X.X');
-            angular.element(document.querySelector('#rng-value')).text('Something went wrong...');
+            $notice.getEventForm({
+                event: 'error',
+                message: 'An unknown error has occurred: ' + data,
+            }).submit();
         });
     };
     $scope.stopSpin = function() {

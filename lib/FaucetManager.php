@@ -1,9 +1,9 @@
 <?php
 
 class Manager {
-    private $db;
     private $account;
 
+    public $db;
     public $address;
     public $config = [
         "localtesting" => false,
@@ -28,17 +28,17 @@ class Manager {
         setCookie('satBalance', $this->getBalance(), time()+3600, '/');
     }
 
-    function __destruct() {
+    public function __destruct() {
         $this->db->users->update(["address" => $this->address], $this->account);
     }
 
-    public function &__get($prop) {
+    public function __get($prop) {
         if(isset($this->account[$prop])) return $this->account[$prop];
         else if(in_array($prop, ["address", "referrer"])) $this->$prop = "";
         else if(in_array($prop, ["curve"])) $this->$prop = "radical";
         else if(in_array($prop, ["lastSpin"])) $this->$prop = [];
         else $this->$prop = 0;
-        return $this->$prop;
+        return $this->__get($prop);
     }
 
     public function __set($prop, $val) {
@@ -70,50 +70,50 @@ class Manager {
         return ($this->satbalance + $this->refbalance) | 0;
     }
 
-    function payout($service) {
+    function payout($service, $referral = false) {
         if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
         if(!in_array($service, ["paytoshi", "faucetbox"])) return ["success" => false, "message" => "no payment service specified"];
-        if($this->satbalance < 1) return ["success" => false, "message" => "account balance is empty"];
+        if($this->satbalance < 1 && $this->refbalance < 1) return ["success" => false, "message" => "account balance is empty"];
 
-        if(!$this->config["localtesting"]) {
+        $amount_to_send = ($referral ? $this->refbalance : $this->satbalance) | 0;
+        if(!$this->config["localtesting"] && $this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' && $amount_to_send > 0) {
             if ($service == 'paytoshi') {
                 $paytoshi = new Paytoshi();
-                $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, ($this->satbalance | 0), $_SERVER['REMOTE_ADDR']);
-                if (isset($res['error'])) return $res;
+                $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
+                if (isset($res['error'])) return array_merge($res, ["success" => false]);
             } else if ($service == 'faucetbox') {
                 $faucetbox = new FaucetBOX($this->config["faucetBoxApiKey"]);
-
-                $res = $faucetbox->send($this->address, ($this->satbalance | 0));
+                $res = $faucetbox->send($this->address, $amount_to_send, (string) $referral);
                 if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
             }
+        } else $res = ["success" => true];
 
-            if ($this->refbalance >= 1) {
-                if ($service == 'paytoshi') {
-                    $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, ($this->refbalance | 0), $_SERVER['REMOTE_ADDR'], true);
-                    if (isset($res['error'])) return $res;
-                } else if ($service == 'faucetbox') {
-                    $res = $faucetbox->send($this->address, ($this->refbalance | 0), "true");
-                    if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
-                }
-            }
+        $satoshi_sent = $amount_to_send;
+
+        $this->satwithdrawn += $satoshi_sent;
+        if($referral) $this->refbalance -= $satoshi_sent;
+        else $this->satbalance -= $satoshi_sent;
+
+        if($satoshi_sent > 0) {
+            $this->db->selectCollection('payouts')->insert(["address" => $this->address, "amount" => $satoshi_sent, "service" => $service, "referral" => $referral, "time" => time()]);
         }
 
-        $satoshi_sent = $this->satbalance | 0;
-        $rewards_sent = $this->refbalance | 0;
-
-        $this->satwithdrawn += $satoshi_sent + $rewards_sent;
-        $this->satbalance -= $satoshi_sent;
-        $this->refbalance -= $rewards_sent;
+        if (!$referral && $this->refbalance >= 1) {
+            $refres = $this->payout($service, true);
+            if($refres["success"]) {
+                $satoshi_sent += $refres["amount"];
+            }
+        }
 
         $service_check_url = [
             'paytoshi' => "<a ng-href=\"https://paytoshi.org/{{btcAddress}}/balance\" target=\"_blank\">Paytoshi</a>",
             'faucetbox' => "<a ng-href=\"https://faucetbox.com/en/check/{{btcAddress}}\" target=\"_blank\">FaucetBOX</a>",
         ];
 
-        if($this->config["localtesting"]) return ["success" => true, "message" => ($satoshi_sent + $rewards_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!"];
+        if($this->config["localtesting"]) return ["success" => true, "message" => ($satoshi_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!"];
         else if($service == 'paytoshi' && isset($res["error"]) && $res["error"]) return ["success" => false, "message" => $res["message"]];
         else if($service == 'faucetbox' && !$res["success"]) return ["success" => false, "message" => $res["message"]];
-        else return ["success" => true, "message" => ($satoshi_sent + $rewards_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!"];
+        else return ["success" => true, "message" => ($satoshi_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!", "amount" => $satoshi_sent];
     }
 
     function addBalance($amount) {

@@ -44,20 +44,30 @@ var btcFaucetApp = angular.module('btcFaucetApp',['ngCookies'], function($httpPr
     }];
 });
 
-btcFaucetApp.run(function($rootScope) {});
+btcFaucetApp.service('$notice', function() {
+    this.getEventForm = function(fields) {
+        var $form = $('<form method="post"></form>');
+        for(var name in fields) {
+            $form.append($('<input>').attr("name", name).val(fields[name]));
+        }
+        return $form;
+    };
+});
 
-btcFaucetApp.controller('MainContentCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
+btcFaucetApp.controller('MainContentCtrl', ['$scope', '$http', '$cookies', '$notice', function($scope, $http, $cookies, $notice) {
     $scope.btcAddress = $cookies.btcAddress;
     $scope.satBalance = $cookies.satBalance;
     $scope.payout = function(paymentMethod) {
         $http.post("./ajax/payout.php",{'g-recaptcha-response': grecaptcha.getResponse(), utransserv: paymentMethod}).success(function(data) {
-            var $form = $('<form method="post"></form>');
-            $form.append($('<input>').attr("name", "event").val(data['success'] ? 'success' : 'error'));
-            $form.append($('<input>').attr("name", "message").val(data['message']));
-            $form.submit();
-        }).error(function() {
-            var $form = $('<form method="post"><input type="hidden" name="event" value="error"><input type="hidden" name="message" value="An error has occurred, the owner has been notified.">');
-            $form.submit();
+            $notice.getEventForm({
+                event: data['success'] ? 'success' : 'error',
+                message: data['message'],
+            }).submit();
+        }).error(function(data) {
+            $notice.getEventForm({
+                event: 'error',
+                message: 'An unknown error has occurred: ' + data,
+            }).submit();
         });
     };
 }]);

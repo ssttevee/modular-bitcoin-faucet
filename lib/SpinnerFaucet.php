@@ -39,7 +39,7 @@ class SpinnerFaucet {
             $lastSpin["tries"] = 0;
         } else if($lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["tries"] >= $this->config["maxSpins"] ||
             $lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["number"] == null) {
-            return array("spin" => null, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]);
+            return ["success" => false, "message" => "You have run out of tries. You can claim your current number or wait 10 minutes before spinning again.", "spin" => null, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]];
         }
 
         $lastSpin["number"] = mt_rand() / mt_getrandmax() * $this->config["bonusChance"];
@@ -49,7 +49,7 @@ class SpinnerFaucet {
 
         $this->fm->lastSpin = $lastSpin;
 
-        return array("spin" => $lastSpin["number"] | 0, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]);
+        return ["success" => true, "message" => "You got " . ($lastSpin["number"] | 0) . "!", "spin" => $lastSpin["number"] | 0, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]];
     }
 
     function claim() {
@@ -65,9 +65,12 @@ class SpinnerFaucet {
         $lastSpin = $this->fm->lastSpin;
 
         if(empty($lastSpin) || $lastSpin["number"] == null) {
-            return array("added" => null, "balance" => $this->fm->getBalance());
+            return ["success" => false, "amount" => 0, "message" => "no satoshi to claim"];
         } else {
             $x = $lastSpin["number"];
+
+            $collection = $this->fm->db->selectCollection('spinner.history');
+            $collection->insert(["address" => $this->fm->address, "time" => time(), "number" => $lastSpin["number"], "curve" => $lastSpin["curve"], "tries" => $lastSpin["tries"]]);
 
             $lastSpin["number"] = null;
             $lastSpin["tries"] = $this->config["maxSpins"];
@@ -77,7 +80,7 @@ class SpinnerFaucet {
 
             $amount = eval($formulas[$lastSpin["curve"]]);
             $this->fm->addBalance($amount);
-            return array("added" => $amount, "balance" => $this->fm->getBalance());
+            return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
         }
     }
 }

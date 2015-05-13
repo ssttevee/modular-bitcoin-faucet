@@ -3,18 +3,9 @@ require "./lib/SpinnerFaucet.php";
 $faucet = new SpinnerFaucet($mgr);
 ?>
 <div class="middle left" ng-controller="SpinnerFaucetCtrl" ng-init="init(<?= $faucet->lastNumber ?>, '<?= $faucet->curve ?>', <?= $faucet->tries_left ?>, {base: <?= $faucet->config["baseAmt"] ?>, max: <?= $faucet->config["maxBonusAmt"] ?>, chance: <?= $faucet->config["bonusChance"]?>})">
-    <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;paymentMethod = 'paytoshi';"><b>Paytoshi</b></a> | <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;paymentMethod = 'faucetbox';"><b>FaucetBOX</b></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
-    <?php if(isset($_POST['event'])) { ?>
-        <?php if($_POST['event'] == 'satoshiclaimed' && isset($_POST['error'])) { ?>
-            <div class="notice red">Error: <?= $_POST['error'] ?></div>
-        <?php } else if($_POST['event'] == 'satoshiclaimed') { ?>
-            <div class="notice"><?= $_POST['amount'] ?> satoshi has been added to your balance!</div>
-        <?php } else { ?>
-            <div class="notice<?= $_POST['event'] == 'error' ? ' red' : '' ?>"><?= $_POST['message'] ?></div>
-        <?php } ?>
-    <?php } ?>
+    <?= $top_bar ?>
     <?php if($faucet->getRemainingTries() < 1 && $mgr->lastSpin["number"] == null) { ?>
-        Time until next claim
+        <h2>Time until next claim</h2>
         <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69468'); ?></div>
         <div ng-init="timeLeft = <?= $faucet->getWaitTime() ?>;startCountDown();">
             <h1>{{secondsToStr(timeLeft)}}</h1>
@@ -34,8 +25,8 @@ $faucet = new SpinnerFaucet($mgr);
         <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
         <span ng-show="spinDownDone">{{remainingSpins}} tries left<br></span>
         <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
-        <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button>
-    <?php } ?><br><br>
+        <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button><br><br>
+    <?php } ?>
     <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
     <h2>Refer and get 10% of every dispense!</h2>
     Your referral link:<br>
