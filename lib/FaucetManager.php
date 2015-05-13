@@ -2,6 +2,7 @@
 
 class Manager {
     private $db;
+    private $account;
 
     public $btcAddr;
     public $config;
@@ -12,76 +13,93 @@ class Manager {
         $this->db = $mongo->btcfaucet;
         $this->btcAddr = $btcAddress;
         $this->config = $config;
-        $this->filter = array('address' => $this->btcAddr);
+
+        $this->account = $this->getAccount();
 
         // refresh cookies
         setCookie('btcAddress', $this->btcAddr, time()+3600, '/');
         setCookie('satBalance', $this->getBalance(), time()+3600, '/');
     }
 
+    function __destruct() {
+        $this->db->users->update(["address" => $this->btcAddr], $this->account);
+    }
+
+    public function &__get($prop) {
+        if(isset($this->$prop) || property_exists($this, $prop)) {
+            return $this->$prop;
+        } else {
+            if(isset($this->account[$prop])) return $this->account[$prop];
+            else if(in_array($prop, ["address", "referrer"])) $this->$prop = "";
+            else if(in_array($prop, ["lastSpin"])) $this->$prop = [];
+            else $this->$prop = 0;
+            return $this->$prop;
+        }
+    }
+
+    public function __set($prop, $val) {
+        if(in_array($prop, ["db", "btcAddr", "config"])) $this->$prop = $val;
+        $this->account[$prop] = $val;
+    }
+
+    private function getAccount() {
+        $acc = $this->db->users->findOne(['address' => $this->btcAddr]);
+        return empty($acc) ? $this->createAccount() : $acc;
+    }
+
     private function createAccount() {
-        $newUser = array(
+        $newUser = [
             "address" => $this->btcAddr,
             "created" => time(),
+            "refbalance" => 0,
             "satbalance" => 0,
+            "alltimeref" => 0,
             "alltimebal" => 0,
             "satspent" => 0,
             "satwithdrawn" => 0,
+            "claimed" => 0,
             "referrer" => isset($_COOKIE['ref']) ? $_COOKIE['ref'] : '',
-        );
+        ];
         if($this->db->users->insert($newUser)) return $newUser;
-        die("failed to add new user");
-    }
-
-    function getAccount() {
-        return $this->db->users->findOne($this->filter);
+        die("failed to add user");
     }
 
     function getBalance() {
-        $cursor = $this->db->users->findOne($this->filter, array('satbalance'));
-
-        if($cursor == null) {
-            $this->createAccount();
-            return $this->getBalance();
-        } else {
-            return $cursor['satbalance'] | 0;
-        }
+        return ($this->satbalance + $this->refbalance) | 0;
     }
 
     function getRemainingTries() {
-        $cursor = $this->db->users->findOne($this->filter, array('lastSpin'));
-        if(!isset($cursor["lastSpin"]) || $cursor["lastSpin"]["time"] < time() - $this->config["spinInterval"]) return $this->config["maxSpins"];
-        else return $this->config["maxSpins"] - $cursor["lastSpin"]["tries"];
+        if(empty($this->lastSpin) || $this->lastSpin["time"] < time() - $this->config["spinInterval"]) return $this->config["maxSpins"];
+        else return $this->maxSpins - $this->lastSpin["tries"];
     }
 
     function getWaitTime() {
-        $cursor = $this->db->users->findOne($this->filter, array('lastSpin.time'));
-        return $cursor["lastSpin"]["time"] - (time() - $this->config["spinInterval"]);
+        return $this->lastSpin["time"] - (time() - $this->config["spinInterval"]);
     }
 
     function getLastSpin() {
-        $cursor = $this->db->users->findOne($this->filter, array('lastSpin.number'));
-        return !isset($cursor["lastSpin"]) ? 'null' : $cursor["lastSpin"]["number"] == null ? 'null' : $cursor["lastSpin"]["number"];
+        return empty($this->lastSpin) ? 'null' : $this->lastSpin["number"] == null ? 'null' : $this->lastSpin["number"];
     }
 
     function spin() {
-        $cursor = $this->db->users->findOne($this->filter, array('lastSpin'));
+        $lastSpin = $this->lastSpin;
 
-        if(!isset($cursor["lastSpin"])) {
-            $cursor["lastSpin"]["tries"] = 0;
-        } else if($cursor["lastSpin"]["time"] > time() - $this->config["spinInterval"] && $cursor["lastSpin"]["tries"] >= $this->config["maxSpins"] ||
-            $cursor["lastSpin"]["time"] > time() - $this->config["spinInterval"] && $cursor["lastSpin"]["number"] == null) {
-            return array("spin" => null, "tries" => $this->config["maxSpins"] - $cursor["lastSpin"]["tries"]);
-        } else if($cursor["lastSpin"]["time"] < time() - $this->config["spinInterval"]) {
-            $cursor["lastSpin"]["tries"] = 0;
+        if(empty($lastSpin)) {
+            $lastSpin["tries"] = 0;
+        } else if($lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["tries"] >= $this->config["maxSpins"] ||
+            $lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["number"] == null) {
+            return array("spin" => null, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]);
+        } else if($lastSpin["time"] < time() - $this->config["spinInterval"]) {
+            $lastSpin["tries"] = 0;
         }
 
-        $cursor["lastSpin"]["number"] = mt_rand(0, $this->config["bonusChance"]);
-        $cursor["lastSpin"]["time"] = time();
-        $cursor["lastSpin"]["tries"]++;
-        $this->db->users->update($this->filter, array('$set' => array("lastSpin" => $cursor["lastSpin"])));
+        $lastSpin["number"] = mt_rand(0, $this->config["bonusChance"]);
+        $lastSpin["time"] = time();
+        $lastSpin["tries"]++;
 
-        return array("spin" => $cursor["lastSpin"]["number"], "tries" => $this->config["maxSpins"] - $cursor["lastSpin"]["tries"]);
+        $this->lastSpin = $lastSpin;
+
+        return array("spin" => $this->lastSpin["number"], "tries" => $this->config["maxSpins"] - $this->lastSpin["tries"]);
     }
 
     function claimSpin($curve) {
@@ -93,12 +111,20 @@ class Manager {
             "fractal" => 'return $base + ($max + $max/$chance)/($x/5 + 1) - $max/$chance;',
             "radical" => '$max /= 20;return $base - sqrt($max*$max/$chance*$x) + $max;',
         );
-        $cursor = $this->db->users->findOne($this->filter, array('claims','lastSpin.number'));
-        if(!isset($cursor["lastSpin"]) || $cursor["lastSpin"]["number"] == null) return array("added" => null, "balance" => $this->getBalance());
-        else {
-            if(!isset($cursor["claims"])) $cursor["claims"] = 0;
-            $x = $cursor["lastSpin"]["number"];
-            $this->db->users->update($this->filter, array('$set' => array('claims' => ($cursor["claims"] + 1),'lastSpin.number' => null,'lastSpin.tries' => $this->config["maxSpins"])));
+
+        $lastSpin = $this->lastSpin;
+
+        if(empty($lastSpin) || $lastSpin["number"] == null) {
+            return array("added" => null, "balance" => $this->getBalance());
+        } else {
+            $x = $lastSpin["number"];
+
+            $this->claims++;
+            $lastSpin["number"] = null;
+            $lastSpin["tries"] = $this->config["maxSpins"];
+
+            $this->lastSpin = $lastSpin;
+
             $amount = eval($formulas[$curve]);
             $this->addBalance($amount);
             return array("added" => $amount, "balance" => $this->getBalance());
@@ -116,32 +142,24 @@ class Manager {
 
         if(isset($res['error'])) return $res;
 
-        $cursor = $this->db->users->findOne($this->filter, array('satbalance','satwithdrawn'));
-        $cursor["satbalance"] -= $res["amount"];
-        $cursor["satwithdrawn"] += $res["amount"];
-        $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "satwithdrawn" => $cursor["satwithdrawn"])));
+        $this->satbalance -= $res["amount"];
+        $this->satwithdrawn += $res["amount"];
 
         return $res;
     }
 
     function addBalance($amount) {
-        $cursor = $this->db->users->findOne($this->filter, array('satbalance','alltimebal','referrer'));
-        $cursor["satbalance"] += $amount;
-        $cursor["alltimebal"] += $amount;
-        $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "alltimebal" => $cursor["alltimebal"])));
-        $this->rewardReferrer($cursor["referrer"], $amount);
+        $this->satbalance += $amount;
+        $this->alltimebal += $amount;
+        $this->rewardReferrer($this->referrer, $amount);
     }
 
     function rewardReferrer($referrer, $amount) {
         $amount *= $this->config["referralReward"];
         if(isset($referrer) && strlen($referrer) > 0) {
-            $cursor = $this->db->users->findOne(array('address' => $referrer), array('satbalance','alltimebal','refreward'));
-            if($cursor == null) return;
-            if(!isset($cursor["refreward"])) $cursor["refreward"] = 0;
-            $cursor["satbalance"] += $amount;
-            $cursor["alltimebal"] += $amount;
-            $cursor["refreward"] += $amount;
-            $this->db->users->update($this->filter, array('$set' => array("satbalance" => $cursor["satbalance"], "alltimebal" => $cursor["alltimebal"], "refreward" => $cursor["refreward"])));
+            $ref = new Manager($referrer);
+            $this->refbalance += $amount;
+            $this->alltimeref += $amount;
         }
     }
 }
