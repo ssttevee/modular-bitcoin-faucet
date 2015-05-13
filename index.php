@@ -6,7 +6,7 @@ require "./lib/AdManager.php";
 require "./lib/FaucetManager.php";
 
 if(isset($_GET['r'])) {
-    if((new Manager($_GET['r']))->getAccount() != null) setcookie('ref', $_GET['r'], time() + 3600, '/');
+    if((new Manager($_GET['r']))->address != null) setcookie('ref', $_GET['r'], time() + 3600, '/');
 } ?>
 <html ng-app="btcFaucetApp">
 <head>
@@ -68,9 +68,9 @@ if(isset($_GET['r'])) {
                 <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
-                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div><br>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
-                <span ng-show="spinDownDone">{{remainingSpins}} tries left</span><br>
+                <span ng-show="spinDownDone">{{remainingSpins}} tries left<br></span>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>
                 <button id="rng-claim" ng-click="showCaptcha = true;captchaShowClaim = true;" ng-show="spinDownDone">Claim</button>
             <?php } ?><br><br>
