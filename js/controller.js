@@ -71,7 +71,7 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
     };
     $scope.spin = function(x) {
         if(x == null) x = Math.random() * $scope.spinCfg.chance;
-        angular.element(document.querySelector('#rng-spinner')).text(("000" + x).slice(-4));
+        angular.element(document.querySelector('#rng-spinner')).text(("000" + (x|0)).slice(-4));
         angular.element(document.querySelector('#rng-value')).text('= ' + $scope.getSatoshiValue(x | 0, $scope.formula) + " Satoshi");
         if($scope.spinningDown && $scope.spinDownCounter == 0) {
             clearInterval($scope.intervalId);
