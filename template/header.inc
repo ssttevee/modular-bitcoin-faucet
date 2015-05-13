@@ -1,18 +1,25 @@
-<html ng-app>
+<?php
+$parts = explode('/', $_SERVER['REQUEST_URI']);
+unset($parts[count($parts) - 1]);
+$base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
+?>
+<html ng-app="btcFaucetApp">
 <head>
-    <title>All The Satoshi!</title>
+    <title>All The Satoshi! - Earn Free Bitcoins!</title>
     <link href="style.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="js/controller.js" type="application/javascript"></script>
+    <script src="js/<?= $_GET['page'] ?>.js" type="application/javascript"></script>
+    <base href="<?= $base_url ?>">
 </head>
 <body>
-<div class="header" ng-controller="">
-    <div class="logo">All The Satoshi!</div>
-    <div class="ad">
-        <iframe scrolling="no" frameborder="0" src="//adbit.co/adspace.php?a=1F4DU7F5AB57A" style="overflow:hidden;width:728px;height:90px;"></iframe>
-    </div>
+<div class="header">
+    <a href="./" class="logo"></a>
+    <div class="ad leaderboard"><?php AdManager::insert('bitclix','11719'); ?></div>
 </div>
-<div class="content">
-    <div class="ad left"></div>
-    <div class="ad right"></div>
-    <div class="middle left">
+<div class="content" ng-controller="MainContentCtrl">
+    <div class="ad skyscraper left"><?php AdManager::insert('adsense','8882945326'); ?></div>
+    <div class="ad skyscraper right"><?php AdManager::insert('adsense','1220077720'); ?></div>
