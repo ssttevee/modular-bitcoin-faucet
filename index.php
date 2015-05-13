@@ -32,7 +32,7 @@ if(isset($_GET['r'])) {
     <div class="ad skyscraper right"><?php AdManager::insert('adsense','1220077720'); ?></div>
     <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . (isset($mgr->lastSpin["number"]) ? $mgr->lastSpin["number"] : 'null') . ', \'' . $mgr->lastSpin["curve"] . '\', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
-            <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div><br>
+            <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69468'); ?></div><br>
             <form method="post" action="./cgi-bin/login.php">
                 <label for="bitcoin-address">Your BitCoin Address: </label>
                 <input id="bitcoin-address" type="text" name="btcAddress"/>
@@ -52,7 +52,7 @@ if(isset($_GET['r'])) {
             <?php } ?>
             <?php if($mgr->getRemainingTries() < 1 && $mgr->lastSpin["number"] == null) { ?>
                 Time until next claim
-                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69468'); ?></div>
                 <div ng-init="timeLeft = <?= $mgr->getWaitTime() ?>;startCountDown();">
                     <h1>{{secondsToStr(timeLeft)}}</h1>
                 </div>
@@ -67,7 +67,7 @@ if(isset($_GET['r'])) {
                 <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
                 <div id="rng-spinner" ng-init="startSpin();">0000</div>
                 <div id="rng-value">= 0 satoshi</div>
-                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div><br>
+                <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69468'); ?></div><br>
                 <button id="rng-stop" ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
                 <span ng-show="spinDownDone">{{remainingSpins}} tries left<br></span>
                 <button id="rng-respin" ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone && remainingSpins > 0">Try Again</button>

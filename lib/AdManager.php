@@ -12,12 +12,19 @@ class AdManager {
     );
 
     static private $net_codes = array(
+        'a-ads' => 'return "<iframe data-aa=\"".$slot."\" src=\"https://ad.a-ads.com/".$slot."?size=".$width."x".$height."\" scrolling=\"no\" style=\"width: ".$width."px; height: ".$height."px; border:0px; padding:0;overflow:hidden;\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";',
         'adbit' => 'return "<iframe scrolling=\"no\" frameborder=\"0\" src=\"//adbit.co/adspace.php?a=".$slot."\" style=\"overflow:hidden;width:".$width."px;height:".$height."px;\"></iframe>";',
         'adsense' => 'return "<script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>" . "<ins class=\"adsbygoogle\" style=\"display:inline-block;width:".$width."px;height:".$height."px;\" data-ad-client=\"".self::$ad_slots[$network][$slot]["pubid"]."\" data-ad-slot=\"".$slot."\"></ins>" . "<script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>";',
         'bitclix' => 'return "<iframe scrolling=\"no\" style=\"border: 0; width: ".$width."px; height: ".$height."px;\" src=\"//ads.bcsyndication.com/get.php?s=".$slot."\"></iframe>";',
     );
 
     static private $ad_slots = [
+        'a-ads' => [
+            '69468' => [
+                'width' => 336,
+                'height' => 280,
+            ],
+        ],
         'adsense' => [
             '8882945326' => [
                 'pubid' => 'ca-pub-5885519961820058',
@@ -64,7 +71,6 @@ class AdManager {
         $height = self::$ad_slots[$network][$slot]['height'];
 
         echo eval(self::$net_codes[$network]);
-
     }
 
 }
