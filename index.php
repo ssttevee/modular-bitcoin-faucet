@@ -30,7 +30,7 @@ if(isset($_GET['r'])) {
 <div class="content">
     <div class="ad skyscraper left"><?php AdManager::insert('adsense','8882945326'); ?></div>
     <div class="ad skyscraper right"><?php AdManager::insert('adsense','1220077720'); ?></div>
-    <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . $mgr->getLastSpin() . ', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
+    <div class="middle left" ng-controller="MainFaucetCtrl"<?php if(isset($_COOKIE['btcAddress'])) echo 'ng-init="init(' . (isset($mgr->lastSpin["number"]) ? $mgr->lastSpin["number"] : 'null') . ', \'' . $mgr->lastSpin["curve"] . '\', ' . $mgr->getRemainingTries() . ', {base: ' . $mgr->config["baseAmt"] . ', max: ' . $mgr->config["maxBonusAmt"] . ', chance: ' . $mgr->config["bonusChance"] . '});"'; ?>>
         <?php if(!isset($_COOKIE['btcAddress'])) { ?>
             <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div><br>
             <form method="post" action="./cgi-bin/login.php">
@@ -40,19 +40,17 @@ if(isset($_GET['r'])) {
             </form>
             <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
         <?php } else { ?>
-            <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;"><b>Paytoshi</b></a> <a href="javascript:void();"></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
+            <div id="top-bar"><span>Payout by <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;paymentMethod = 'paytoshi';"><b>Paytoshi</b></a> | <a href="javascript:void();" ng-click="showCaptcha = true;captchaShowPayout = true;paymentMethod = 'faucetbox';"><b>FaucetBOX</b></a></span><span>Balance: <b>{{satBalance}}</b> satoshi</span><span id="addr"><b>{{btcAddress}}</b></span></div>
             <?php if(isset($_POST['event'])) { ?>
-                <?php if($_POST['event'] == 'paidout' && isset($_POST['error'])) { ?>
-                    <div class="notice red">Error: <?= $_POST['error'] ?></div>
-                <?php } else if($_POST['event'] == 'paidout') { ?>
-                    <div class="notice">You've been sent <?= $_POST['amount'] ?> satoshi on <a ng-href="https://paytoshi.org/{{btcAddress}}/balance">Paytoshi</a>!</div>
-                <?php } else if($_POST['event'] == 'satoshiclaimed' && isset($_POST['error'])) { ?>
+                <?php if($_POST['event'] == 'satoshiclaimed' && isset($_POST['error'])) { ?>
                     <div class="notice red">Error: <?= $_POST['error'] ?></div>
                 <?php } else if($_POST['event'] == 'satoshiclaimed') { ?>
                     <div class="notice"><?= $_POST['amount'] ?> satoshi has been added to your balance!</div>
+                <?php } else { ?>
+                    <div class="notice<?= $_POST['event'] == 'error' ? ' red' : '' ?>"><?= $_POST['message'] ?></div>
                 <?php } ?>
             <?php } ?>
-            <?php if($mgr->getRemainingTries() < 1) { ?>
+            <?php if($mgr->getRemainingTries() < 1 && $mgr->lastSpin["number"] == null) { ?>
                 Time until next claim
                 <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('adsense','5929478925'); ?></div>
                 <div ng-init="timeLeft = <?= $mgr->getWaitTime() ?>;startCountDown();">
@@ -60,8 +58,9 @@ if(isset($_GET['r'])) {
                 </div>
             <?php } else { ?>
                 <h1>Welcome to All The Satoshi Beta Faucet.</h1>
-                The random numbers below is what guages how many satoshis you can claim.  The lower the number, the more satoshi you will get.  The curve depicts how much satoshi you can get from your number.  The fractal curve can give you up to 2000 satoshi, but at an incredibly low chance.  The Radial curve will only give you, at most, 250 satoshi, but you get a better rate of satoshi if you get high number.
-                <br>
+                Your goal is to get the lowest number possible.<br>
+                The fractal curve will give you a low chance to get up to 2000 satoshi.<br>
+                The radial curve will give you a high chance to get up to 250 satoshi.<br>
                 <br>
                 Pick a curve: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <input id="fractal-formula" type="radio" name="formula" value="fractal" ng-model="formula" ng-disabled="spinningDown"><label for="fractal-formula">Fractal</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

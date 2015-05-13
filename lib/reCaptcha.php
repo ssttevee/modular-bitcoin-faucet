@@ -4,6 +4,16 @@ class reCaptcha {
         $this->secret = $secret;
     }
 
+    static function getMessage($error_code) {
+        $arr = [
+            'missing-input-secret' => 'The secret parameter is missing.',
+            'invalid-input-secret' => 'The secret parameter is invalid or malformed.',
+            'missing-input-response' => 'The response parameter is missing.',
+            'invalid-input-response' => 'The response parameter is invalid or malformed.'
+        ];
+        return $arr[$error_code];
+    }
+
     function verify($response) {
         //set POST variables
         $url = 'https://www.google.com/recaptcha/api/siteverify';

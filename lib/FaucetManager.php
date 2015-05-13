@@ -5,14 +5,25 @@ class Manager {
     private $account;
 
     public $btcAddr;
-    public $config;
+    public $config = [
+        "baseAmt" => 50,
+        "maxBonusAmt" => 2000,
+        "bonusChance" => 8000,
+        "spinInterval" => 600,
+        "maxSpins" => 3,
+        "referralReward" => 0.1,
+        "paytoshiApiKey" => "5yv5hbjulxthon78tgs6jq2d87q6ukbblhv7nbhuh8b383bi4l",
+        "faucetBoxApiKey" => "AN5BvrbqHul2ARpXQRflZYM6Tiloh",
+    ];
 
-    function __construct($btcAddress, $config = array("baseAmt" => 50, "maxBonusAmt" => 2000, "bonusChance" => 8000, "spinInterval" => 600, "maxSpins" => 3, "referralReward" => 0.1, "paytoshiApiKey" => "5yv5hbjulxthon78tgs6jq2d87q6ukbblhv7nbhuh8b383bi4l")) {
+    function __construct($btcAddress, $config = array()) {
 //        $mongo = new MongoClient();
         $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
         $this->db = $mongo->btcfaucet;
         $this->btcAddr = $btcAddress;
-        $this->config = $config;
+
+        foreach ($config as $key => $value)
+            $this->config[$key] = $value;
 
         $this->account = $this->getAccount();
 
@@ -31,6 +42,7 @@ class Manager {
         } else {
             if(isset($this->account[$prop])) return $this->account[$prop];
             else if(in_array($prop, ["address", "referrer"])) $this->$prop = "";
+            else if(in_array($prop, ["curve"])) $this->$prop = "radical";
             else if(in_array($prop, ["lastSpin"])) $this->$prop = [];
             else $this->$prop = 0;
             return $this->$prop;
@@ -69,19 +81,16 @@ class Manager {
     }
 
     function getRemainingTries() {
-        if(empty($this->lastSpin) || $this->lastSpin["time"] < time() - $this->config["spinInterval"]) return $this->config["maxSpins"];
-        else return $this->maxSpins - $this->lastSpin["tries"];
+        $lastSpin = $this->lastSpin;
+        if(empty($lastSpin) || $lastSpin["time"] < time() - $this->config["spinInterval"]) return $this->config["maxSpins"];
+        else return $this->config["maxSpins"] - $lastSpin["tries"];
     }
 
     function getWaitTime() {
         return $this->lastSpin["time"] - (time() - $this->config["spinInterval"]);
     }
 
-    function getLastSpin() {
-        return empty($this->lastSpin) ? 'null' : $this->lastSpin["number"] == null ? 'null' : $this->lastSpin["number"];
-    }
-
-    function spin() {
+    function spin($curve) {
         $lastSpin = $this->lastSpin;
 
         if(empty($lastSpin)) {
@@ -93,16 +102,17 @@ class Manager {
             $lastSpin["tries"] = 0;
         }
 
-        $lastSpin["number"] = mt_rand(0, $this->config["bonusChance"]);
+        $lastSpin["number"] = mt_rand() / mt_getrandmax() * $this->config["bonusChance"];
         $lastSpin["time"] = time();
         $lastSpin["tries"]++;
+        $lastSpin["curve"] = $curve;
 
         $this->lastSpin = $lastSpin;
 
-        return array("spin" => $this->lastSpin["number"], "tries" => $this->config["maxSpins"] - $this->lastSpin["tries"]);
+        return array("spin" => $lastSpin["number"] | 0, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]);
     }
 
-    function claimSpin($curve) {
+    function claimSpin() {
         $base = $this->config["baseAmt"];
         $max = $this->config["maxBonusAmt"];
         $chance = $this->config["bonusChance"];
@@ -125,27 +135,53 @@ class Manager {
 
             $this->lastSpin = $lastSpin;
 
-            $amount = eval($formulas[$curve]);
+            $amount = eval($formulas[$lastSpin["curve"]]);
             $this->addBalance($amount);
             return array("added" => $amount, "balance" => $this->getBalance());
         }
     }
 
-    function payout() {
-        $paytoshi = new Paytoshi();
-        $res = $paytoshi->faucetSend(
-            $this->config["paytoshiApiKey"], //Faucet Api key
-            $this->btcAddr, //Bitcoin address
-            $this->getBalance(), //Amount
-            $_SERVER['REMOTE_ADDR'] //Recipient ip
-        );
+    function payout($service) {
+        if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+        if(!in_array($service, ["paytoshi", "faucetbox"])) return ["success" => false, "message" => "no payment service specified"];
+        if($this->satbalance < 1) return ["success" => false, "message" => "account balance is empty"];
 
-        if(isset($res['error'])) return $res;
+        if($service == 'paytoshi') {
+            $paytoshi = new Paytoshi();
+            $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->btcAddr, ($this->satbalance | 0), $_SERVER['REMOTE_ADDR']);
+            if (isset($res['error'])) return $res;
+        } else if($service == 'faucetbox') {
+            $faucetbox = new FaucetBOX($this->config["faucetBoxApiKey"]);
 
-        $this->satbalance -= $res["amount"];
-        $this->satwithdrawn += $res["amount"];
+            $res = $faucetbox->send($this->btcAddr, ($this->satbalance | 0));
+            if(!$res["success"]) return ["success" => false, "message" => $res["message"]];
+        }
 
-        return $res;
+        if($this->refbalance >= 1) {
+            if ($service == 'paytoshi') {
+                $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->btcAddr, ($this->refbalance | 0), $_SERVER['REMOTE_ADDR'], true);
+                if (isset($res['error'])) return $res;
+            } else if ($service == 'faucetbox') {
+                $res = $faucetbox->send($this->btcAddr, ($this->refbalance | 0), "true");
+                if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
+            }
+        }
+
+        $satoshi_sent = $this->satbalance | 0;
+        $rewards_sent = $this->refbalance | 0;
+
+        $this->satwithdrawn += $satoshi_sent + $rewards_sent;
+        $this->satbalance -= $satoshi_sent;
+        $this->refbalance -= $rewards_sent;
+
+        $service_check_url = [
+            'paytoshi' => "<a ng-href=\"https://paytoshi.org/{{btcAddress}}/balance\">Paytoshi</a>",
+            'faucetbox' => "<a ng-href=\"https://faucetbox.com/en/check/{{btcAddress}}\">FaucetBOX</a>",
+        ];
+
+        if($service == 'paytoshi' && isset($res["error"]) && $res["error"]) return ["success" => false, "message" => $res["message"]];
+        else if($service == 'faucetbox' && !$res["success"]) return ["success" => false, "message" => $res["message"]];
+        else return ["success" => true, "message" => ($satoshi_sent + $rewards_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!"];
     }
 
     function addBalance($amount) {
@@ -158,8 +194,8 @@ class Manager {
         $amount *= $this->config["referralReward"];
         if(isset($referrer) && strlen($referrer) > 0) {
             $ref = new Manager($referrer);
-            $this->refbalance += $amount;
-            $this->alltimeref += $amount;
+            $ref->refbalance += $amount;
+            $ref->alltimeref += $amount;
         }
     }
 }

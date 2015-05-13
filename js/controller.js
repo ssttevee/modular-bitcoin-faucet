@@ -46,10 +46,10 @@ var btcFaucetApp = angular.module('btcFaucetApp',['ngCookies'], function($httpPr
 
 btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
     $scope.btcAddress = $cookies.btcAddress;
-    $scope.satBalance = $cookies.satBalance || 0;
-    $scope.formula = 'fractal';
-    $scope.init = function(lastSpin,triesLeft,config) {
+    $scope.satBalance = $cookies.satBalance;
+    $scope.init = function(lastSpin,formula,triesLeft,config) {
         $scope.lastSpin = lastSpin;
+        $scope.formula = formula;
         $scope.remainingSpins = triesLeft;
         $scope.spinCfg = config;
         if(lastSpin != null) {
@@ -90,7 +90,7 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
     };
     $scope.spinDown = function() {
         if(!$scope.spinningDown) {
-            $http.get("./ajax/spin.php").success(function(data) {
+            $http.post("./ajax/spin.php", {curve:$scope.formula}).success(function(data) {
                 if(!data.spin) {
                     angular.element(document.querySelector('#rng-spinner')).text('zzzz');
                     angular.element(document.querySelector('#rng-value')).text('You\'ve run out of tries');
@@ -120,7 +120,7 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
         }
     };
     $scope.claimSpin = function() {
-        $http.post("./ajax/spin.php",{claim:true,curve:$scope.formula,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
+        $http.post("./ajax/spin.php",{claim:true,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
             var $form = $('<form method="post"><input type="hidden" name="event" value="satoshiclaimed"><input type="hidden" name="amount" value="' + data['added'] + '"></form>');
             if(data['added'] == null) {
                 $form.append($('<input type="hidden" name="error" value="Nothing to claim">'));
@@ -136,16 +136,12 @@ btcFaucetApp.controller('MainFaucetCtrl', ['$scope', '$http', '$cookies', functi
         if(!$scope.spinningDown) $scope.spinDown();
     };
     $scope.payout = function() {
-        $http.post("./ajax/payout.php",{'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
-            var $form = $('<form method="post"><input type="hidden" name="event" value="paidout"><input type="hidden" name="amount" value="' + data['amount'] + '"></form>');
-            if(data['amount'] == null) {
-                $form.append($('<input type="hidden" name="error" value="' + data['message'] + '">'));
-            }
+        $http.post("./ajax/payout.php",{'g-recaptcha-response': grecaptcha.getResponse(), utransserv: $scope.paymentMethod}).success(function(data) {
+            var $form = $('<form method="post"><input type="hidden" name="event" value="' + (data['success'] ? 'success' : 'error') + '"><input type="hidden" name="message" value="' + data['message'] + '">');
+            //$form.submit();
+        }).error(function() {
+            var $form = $('<form method="post"><input type="hidden" name="event" value="error"><input type="hidden" name="message" value="An error has occurred, the owner has been notified.">');
             $form.submit();
-        }).error(function(data) {
-            console.log(data);
-            angular.element(document.querySelector('#rng-spinner')).text('X.X');
-            angular.element(document.querySelector('#rng-value')).text('Something went wrong...');
         });
     };
     $scope.startCountDown = function() {
