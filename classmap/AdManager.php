@@ -20,9 +20,13 @@ class AdManager {
 
     static private $ad_slots = [
         'a-ads' => [
-            '69468' => [
+            '69629' => [
                 'width' => 336,
                 'height' => 280,
+            ],
+            '69632' => [ // leaderboard
+                'width' => 728,
+                'height' => 90,
             ],
         ],
         'adsense' => [
