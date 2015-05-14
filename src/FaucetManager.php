@@ -15,8 +15,8 @@ class FaucetManager {
     ];
 
     function __construct($btcAddress, $config = array()) {
-//        $mongo = new \MongoClient();
-        $mongo = new \MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
+        $mongo = new \MongoClient();
+//        $mongo = new \MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
         $this->db = $mongo->btcfaucet;
         $this->address = $btcAddress;
 
@@ -84,11 +84,11 @@ class FaucetManager {
         $amount_to_send = ($referral ? $this->refbalance : $this->satbalance) | 0;
         if(!$this->config["localtesting"] && /*$this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' &&*/ $amount_to_send > 0) {
             if ($service == 'paytoshi') {
-                $paytoshi = new Payment\Paytoshi();
+                $paytoshi = new \AllTheSatoshi\Payment\Paytoshi();
                 $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
                 if (isset($res['error'])) return array_merge($res, ["success" => false]);
             } else if ($service == 'faucetbox') {
-                $faucetbox = new Payment\FaucetBOX($this->config["faucetBoxApiKey"]);
+                $faucetbox = new \AllTheSatoshi\Payment\FaucetBOX($this->config["faucetBoxApiKey"]);
                 $res = $faucetbox->send($this->address, $amount_to_send, (string) $referral);
                 if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
             }
