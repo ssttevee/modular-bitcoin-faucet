@@ -1,6 +1,5 @@
 <?php
-require "./lib/SpinnerFaucet.php";
-$faucet = new SpinnerFaucet($mgr);
+$faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr);
 ?>
 <div class="middle left" ng-controller="SpinnerFaucetCtrl" ng-init="init(<?= $faucet->lastNumber ?>, '<?= $faucet->curve ?>', <?= $faucet->tries_left ?>, {base: <?= $faucet->config["baseAmt"] ?>, max: <?= $faucet->config["maxBonusAmt"] ?>, chance: <?= $faucet->config["bonusChance"]?>})">
     <?= $top_bar ?>

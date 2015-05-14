@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6469919f381d604129bb75d484be29e9",
+    "hash": "aa8e60bd48da2194fe078a2b6509929c",
     "packages": [
         {
             "name": "linusu/bitcoin-address-validator",

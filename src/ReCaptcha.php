@@ -1,5 +1,8 @@
 <?php
-class reCaptcha {
+
+namespace AllTheSatoshi\Util;
+
+class ReCaptcha {
     function __construct($secret) {
         $this->secret = $secret;
     }

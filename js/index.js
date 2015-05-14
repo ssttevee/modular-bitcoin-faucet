@@ -44,7 +44,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
     };
     $scope.spinDown = function() {
         if(!$scope.spinningDown) {
-            $http.post("./ajax/spin.php", {curve:$scope.formula}).success(function(data) {
+            $http.post("./ajax.php?action=spin", {curve:$scope.formula}).success(function(data) {
                 if(!data.success) {
                     $notice.getEventForm({
                         event: 'error',
@@ -78,7 +78,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
         }
     };
     $scope.claimSpin = function() {
-        $http.post("./ajax/spin.php",{claim:true,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
+        $http.post("./ajax.php?action=claim_spin",{claim:true,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
             $notice.getEventForm({
                 event: data['success'] ? 'success' : 'error',
                 message: data['message'],

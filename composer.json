@@ -11,5 +11,16 @@
   ],
   "require": {
     "linusu/bitcoin-address-validator": "v0.1.2"
+  },
+  "autoload": {
+    "classmap": [
+      "classmap"
+    ],
+    "psr-4": {
+      "AllTheSatoshi\\": "src/",
+      "AllTheSatoshi\\Faucet\\": "src/",
+      "AllTheSatoshi\\Payment\\": "src/",
+      "AllTheSatoshi\\Util\\": "src/"
+    }
   }
 }

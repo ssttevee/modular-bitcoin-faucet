@@ -1,6 +1,8 @@
 <?php
 
-class Manager {
+namespace AllTheSatoshi;
+
+class FaucetManager {
     private $account;
 
     public $db;
@@ -51,19 +53,23 @@ class Manager {
     }
 
     private function createAccount() {
-        $newUser = [
-            "address" => $this->address,
-            "created" => time(),
-            "refbalance" => 0,
-            "satbalance" => 0,
-            "alltimeref" => 0,
-            "alltimebal" => 0,
-            "satspent" => 0,
-            "satwithdrawn" => 0,
-            "referrer" => isset($_COOKIE['ref']) || $_COOKIE['ref'] == $this->address ? $_COOKIE['ref'] : '',
-        ];
-        if($this->db->users->insert($newUser)) return $newUser;
-        die("failed to add user");
+        if(\LinusU\Bitcoin\AddressValidator::isValid($_POST['btcAddress'])) {
+            $newUser = [
+                "address" => $this->address,
+                "created" => time(),
+                "refbalance" => 0,
+                "satbalance" => 0,
+                "alltimeref" => 0,
+                "alltimebal" => 0,
+                "satspent" => 0,
+                "satwithdrawn" => 0,
+                "referrer" => isset($_COOKIE['ref']) || $_COOKIE['ref'] == $this->address ? $_COOKIE['ref'] : '',
+            ];
+            if ($this->db->users->insert($newUser)) return $newUser;
+            die("failed to add user");
+        } else {
+            die("invalid bitcoin address");
+        }
     }
 
     function getBalance() {
@@ -72,17 +78,17 @@ class Manager {
 
     function payout($service, $referral = false) {
         if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
-        if(!in_array($service, ["paytoshi", "faucetbox"])) return ["success" => false, "message" => "no payment service specified"];
-        if($this->satbalance < 1 && $this->refbalance < 1) return ["success" => false, "message" => "account balance is empty"];
+        if(!in_array($service, ["paytoshi", "faucetbox"])) return ["success" => false, "message" => "Payment service was not given."];
+        if($this->satbalance < 1 && $this->refbalance < 1) return ["success" => false, "message" => "Your account balance is zero."];
 
         $amount_to_send = ($referral ? $this->refbalance : $this->satbalance) | 0;
         if(!$this->config["localtesting"] && $this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' && $amount_to_send > 0) {
             if ($service == 'paytoshi') {
-                $paytoshi = new Paytoshi();
+                $paytoshi = new Payment\Paytoshi();
                 $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
                 if (isset($res['error'])) return array_merge($res, ["success" => false]);
             } else if ($service == 'faucetbox') {
-                $faucetbox = new FaucetBOX($this->config["faucetBoxApiKey"]);
+                $faucetbox = new Payment\FaucetBOX($this->config["faucetBoxApiKey"]);
                 $res = $faucetbox->send($this->address, $amount_to_send, (string) $referral);
                 if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
             }
@@ -125,7 +131,7 @@ class Manager {
     function rewardReferrer($referrer, $amount) {
         $amount *= $this->config["referralReward"];
         if(isset($referrer) && strlen($referrer) > 0) {
-            $ref = new Manager($referrer);
+            $ref = new FaucetManager($referrer);
             $ref->refbalance += $amount;
             $ref->alltimeref += $amount;
         }

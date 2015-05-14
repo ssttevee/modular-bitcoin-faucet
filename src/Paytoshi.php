@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Paytoshi PHP Library
- * 
- * Contact: info@paytoshi.org
- * 
- * @author: Looptribe
- * @link: https://paytoshi.org
- * @package looptribe/paytoshi-library-php
- */
+namespace AllTheSatoshi\Payment;
 
 class Paytoshi
 {

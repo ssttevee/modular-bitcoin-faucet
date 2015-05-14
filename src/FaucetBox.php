@@ -1,5 +1,7 @@
 <?php
 
+namespace AllTheSatoshi\Payment;
+
 class FaucetBOX
 {
     protected $api_key;

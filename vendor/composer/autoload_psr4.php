@@ -7,4 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'LinusU\\Bitcoin\\' => array($vendorDir . '/linusu/bitcoin-address-validator/src'),
+    'AllTheSatoshi\\Util\\' => array($baseDir . '/src'),
+    'AllTheSatoshi\\Payment\\' => array($baseDir . '/src'),
+    'AllTheSatoshi\\Faucet\\' => array($baseDir . '/src'),
+    'AllTheSatoshi\\' => array($baseDir . '/src'),
 );

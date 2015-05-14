@@ -1,5 +1,7 @@
 <?php
 
+namespace AllTheSatoshi\Faucet;
+
 class SpinnerFaucet {
 
     public $config = [
