@@ -82,7 +82,7 @@ class FaucetManager {
         if($this->satbalance < 1 && $this->refbalance < 1) return ["success" => false, "message" => "Your account balance is zero."];
 
         $amount_to_send = ($referral ? $this->refbalance : $this->satbalance) | 0;
-        if(!$this->config["localtesting"] && $this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' && $amount_to_send > 0) {
+        if(!$this->config["localtesting"] && /*$this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' &&*/ $amount_to_send > 0) {
             if ($service == 'paytoshi') {
                 $paytoshi = new Payment\Paytoshi();
                 $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
