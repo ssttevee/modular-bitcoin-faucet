@@ -15,8 +15,8 @@ class FaucetManager {
     ];
 
     function __construct($btcAddress, $config = array()) {
-//        $mongo = new MongoClient();
-        $mongo = new MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
+//        $mongo = new \MongoClient();
+        $mongo = new \MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
         $this->db = $mongo->btcfaucet;
         $this->address = $btcAddress;
 
