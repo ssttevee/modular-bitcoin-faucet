@@ -13,12 +13,13 @@ $base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="js/controller.js" type="application/javascript"></script>
     <script src="js/<?= $_GET['page'] ?>.js" type="application/javascript"></script>
+    <?= $_GET['page'] == 'dice' ? '<link href="css/dice.css" rel="stylesheet"/>' : ''?>
     <base href="<?= $base_url ?>">
 </head>
 <body>
 <div class="header">
     <a href="./" class="logo"></a>
-    <div class="ad leaderboard"><?php AdManager::insert('bitclix','11719'); ?></div>
+    <div class="ad leaderboard"><?php AdManager::insert('a-ads','69632'); ?></div>
 </div>
 <div class="content" ng-controller="MainContentCtrl">
     <div class="ad skyscraper left"><?php AdManager::insert('adsense','8882945326'); ?></div>
