@@ -31,6 +31,8 @@ $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr);
     Your referral link:<br>
     <input id="ref-url" type="text" value="<?= $base_url ?>?r={{btcAddress}}" onclick="$(this).select();">
     <div id="captcha-container" ng-show="showCaptcha">
+        <h3 ng-show="captchaShowClaim">Complete the captcha to clam your {{getSatoshiValue(number, formula)}} satoshi</h3>
+        <h1 ng-show="captchaShowPayout">Payout to {{paymentMethod}}</h1>
         <div class="g-recaptcha" data-sitekey="6LdzugYTAAAAAM8sRyvVKcj_uyqKefdzNLnYZx3i"></div>
         <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a>
         <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('adbit','TU5BRHOMMS3FI'); ?></div><br/>

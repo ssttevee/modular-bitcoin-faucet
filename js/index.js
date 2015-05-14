@@ -2,6 +2,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
 
     $scope.init = function(lastSpin,formula,triesLeft,config) {
         $scope.lastSpin = lastSpin;
+        $scope.number = lastSpin;
         $scope.formula = formula == '' ? 'fractal' : formula;
         $scope.remainingSpins = triesLeft;
         $scope.spinCfg = config;
