@@ -17,10 +17,11 @@ if(isset($_POST['event'])) $top_bar .= "\n<div class=\"notice" . ($_POST['event'
 
 
 // Page content
+if(!isset($_COOKIE['btcAddress'])) $_GET["page"] = "login";
 if(!isset($_GET["page"])) $_GET["page"] = "index";
+
 include "template/header.inc";
-if(!isset($_COOKIE['btcAddress'])) include "pages/login.inc";
-else include "pages/" . $_GET["page"] . ".inc";
+include "pages/" . $_GET["page"] . ".inc";
 include "template/footer.inc";
 
 ?>

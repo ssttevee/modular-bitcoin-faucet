@@ -3,8 +3,21 @@
 require_once __DIR__ . "/vendor/autoload.php";
 
 
-$allowed_actions = ["spin", "claim_spin", "payout"];
+$allowed_actions = ["spin", "claim_spin", "payout", "login"];
 
+if($_GET["action"] == "login") {
+    if(!isset($_POST['btcAddress'])) _respond(["message" => "Bitcoin address was not given."]);
+    if(\LinusU\Bitcoin\AddressValidator::isValid($_POST['btcAddress'])) {
+        try {
+            $mgr = new \AllTheSatoshi\FaucetManager($_POST['btcAddress']);
+            _respond(["message" => "Login successful"], true);
+        } catch(Exception $e) {
+            _respond(["message" => $e->getMessage()]);
+        }
+    } else {
+        _respond(["message" => "Given bitcoin address is invalid."]);
+    }
+}
 
 if(!isset($_COOKIE['btcAddress'])) _respond(["error" => "You're not logged in."], false);
 else if(!isset($_GET["action"])) _respond(["message" => "Action was not given."], false);

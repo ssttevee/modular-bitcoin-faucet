@@ -66,9 +66,9 @@ class FaucetManager {
                 "referrer" => isset($_COOKIE['ref']) || $_COOKIE['ref'] == $this->address ? $_COOKIE['ref'] : '',
             ];
             if ($this->db->users->insert($newUser)) return $newUser;
-            die("failed to add user");
+            throw new \Exception("Failed to add user.");
         } else {
-            die("invalid bitcoin address");
+            throw new \Exception("Bitcoin address is invalid.");
         }
     }
 
