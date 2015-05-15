@@ -60,7 +60,7 @@ class SpinnerFaucet {
         $chance = $this->config["bonusChance"];
 
         $formulas = array(
-            "fractal" => 'return $base + ($max + $max/$chance)/($x/5 + 1) - $max/$chance;',
+            "fractal" => 'return $base + ($max + $max/$chance)/($x/25 + 1) - $max/$chance;',
             "radical" => '$max /= 20;return $base - sqrt($max*$max/$chance*$x) + $max;',
         );
 

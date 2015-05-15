@@ -38,7 +38,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
         var max = $scope.spinCfg.max;
         var chance = $scope.spinCfg.chance;
         var formulas = {
-            fractal: "base + (max + max/chance)/(x/5 + 1) - max/chance",
+            fractal: "base + (max + max/chance)/(x/25 + 1) - max/chance",
             radical: "max /= 20;base - Math.sqrt(max*max/chance*x) + max",
         };
         return eval(formulas[formula]) | 0;
