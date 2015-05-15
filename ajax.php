@@ -19,14 +19,13 @@ if($_GET["action"] == "login") {
     }
 }
 
-if(!isset($_COOKIE['btcAddress'])) _respond(["error" => "You're not logged in."], false);
-else if(!isset($_GET["action"])) _respond(["message" => "Action was not given."], false);
-else if(!in_array($_GET["action"], $allowed_actions)) _respond(["message" => "Given action is not allowed."], false);
+if(!isset($_COOKIE['btcAddress'])) _respond(["error" => "You're not logged in."]);
+else if(!isset($_GET["action"])) _respond(["message" => "Action was not given."]);
+else if(!in_array($_GET["action"], $allowed_actions)) _respond(["message" => "Given action is not allowed."]);
 
 
 $action = $_GET["action"];
 $mgr = new \AllTheSatoshi\FaucetManager($_COOKIE['btcAddress']);
-
 
 if($action == "spin") {
     _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr))->spin($_POST['curve']));
@@ -40,7 +39,7 @@ if($action == "spin") {
 }
 
 
-_respond(["message" => "Something went wrong."], false);
+_respond(["message" => "Something went wrong."]);
 
 
 function _respond($response, $success = false) {
