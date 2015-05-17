@@ -85,4 +85,44 @@ class SpinnerFaucet {
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
         }
     }
+
+    function __stats() {
+        $stats = [];
+
+        $collection = $this->fm->db->selectCollection('spinner.history');
+        $stats["fractal_count"] = $collection->count(["curve" => "fractal"]);
+        $stats["radical_count"] = $collection->count(["curve" => "radical"]);
+        $cursor = $collection->find([], ["address", "number", "tries", "time", "curve"]);
+
+        $addrs = [];
+        $stats["lowest_number"] = 8888;
+        $stats["avg_number"] = 0;
+        $stats["avg_fractal_number"] = 0;
+        $stats["avg_radical_number"] = 0;
+        $stats["avg_tries"] = 0;
+        $stats["latest_dispense_time"] = 0;
+        foreach($cursor as $entry) {
+            if(!isset($addrs[$entry["address"]])) $addrs[$entry["address"]] = 0;
+            $addrs[$entry["address"]]++;
+
+            if($entry["number"] < $stats["lowest_number"]) {
+                $stats["lowest_number"] = $entry["number"];
+                $stats["lowest_number_addr"] = $entry["address"];
+            }
+            $stats["avg_number"] = ($stats["avg_number"] + $entry["number"]) / ($stats["avg_number"] == 0 ? 1 : 2);
+            $stats["avg_" . $entry["curve"] . "_number"] = ($stats["avg_" . $entry["curve"] . "_number"] + $entry["number"]) / ($stats["avg_" . $entry["curve"] . "_number"] == 0 ? 1 : 2);
+            $stats["avg_tries"] = ($stats["avg_tries"] + $entry["tries"]) / ($stats["avg_tries"] == 0 ? 1 : 2);
+            if($entry["time"] > $stats["latest_dispense_time"]) $stats["latest_dispense_time"] = $entry["time"];
+        }
+
+        $stats["most_active_count"] = 0;
+        foreach($addrs as $addr => $count) {
+            if($count > $stats["most_active_count"]) {
+                $stats["most_active_addr"] = $addr;
+                $stats["most_active_count"] = $count;
+            }
+        }
+
+        return $stats;
+    }
 }

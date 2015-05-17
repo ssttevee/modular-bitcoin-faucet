@@ -136,4 +136,67 @@ class FaucetManager {
             $ref->alltimeref += $amount;
         }
     }
+
+    function __stats() {
+        $stats = [];
+        $stats["user_count"] = $this->db->selectCollection('users')->count();
+        $stats["paytoshi_payouts"] = $this->db->selectCollection('payouts')->count(["service" => "paytoshi"]);
+        $stats["faucetbox_payouts"] = $this->db->selectCollection('payouts')->count(["service" => "faucetbox"]);
+        $users = $this->db->selectCollection('users')->find([], ["address", "alltimeref", "alltimebal", "satspent", "satwithdrawn", "referrer"]);
+        $payouts = $this->db->selectCollection('payouts')->find([], ["address", "amount", "referral", "time"]);
+
+        $referrals = [];
+        $stats["total_dispensed"] = 0;
+        $stats["total_withdrawn"] = 0;
+        $stats["total_spent"] = 0;
+        $stats["total_referral_reward"] = 0;
+        $stats["total_referred_users"] = 0;
+        foreach($users as $user) {
+            $stats["total_dispensed"] += $user["alltimebal"];
+            $stats["total_withdrawn"] += $user["satwithdrawn"];
+            $stats["total_spent"] += $user["satspent"];
+            $stats["total_referral_reward"] += $user["alltimeref"];
+            if(!empty($user["referrer"])) {
+                $stats["total_referred_users"]++;
+                if(empty($referrals[$user["address"]])) $referrals[$user["address"]] = 0;
+                $referrals[$user["address"]]++;
+            }
+        }
+
+        $stats["top_referrer"] = "";
+        $stats["top_referred"] = 0;
+        foreach($referrals as $addr => $refs) {
+            if($refs > $stats["top_referred"]) {
+                $stats["top_referrer"] = $addr;
+                $stats["top_referred"] = $refs;
+            }
+        }
+
+        $user_payouts = [];
+        $stats["avg_payout_amount"] = 0;
+        $stats["non_referral_payouts"] = 0;
+        $stats["referral_payouts"] = 0;
+        foreach($payouts as $payout) {
+            $stats["avg_payout_amount"] = ($stats["avg_payout_amount"] + $payout["amount"]) / ($stats["avg_payout_amount"] == 0 ? 1 : 2);
+            if(empty($stats["referral"])) $stats["non_referral_payouts"]++;
+            else $stats["referral_payouts"]++;
+            if(empty($user_payouts[$payout["address"]])) $user_payouts[$payout["address"]] = 0;
+            $user_payouts[$payout["address"]] += $payout["amount"];
+        }
+
+        $stats["top_paid_address"] = "";
+        $stats["top_paid_amount"] = 0;
+        foreach($user_payouts as $addr => $amount) {
+            if($amount > $stats["top_paid_amount"]) {
+                $stats["top_paid_address"] = $addr;
+                $stats["top_paid_amount"] = $amount;
+            }
+        }
+
+        return $stats;
+    }
+
+    function getStats() {
+        return ["success" => true, "data" => ["general" => $this->__stats(), "spinner" => (new Faucet\SpinnerFaucet($this))->__stats()]];
+    }
 }
