@@ -6,7 +6,7 @@ $base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
 <html ng-app="btcFaucetApp">
 <head>
     <title>All The Satoshi! - Earn Free Bitcoins!</title>
-    <link href="style.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
