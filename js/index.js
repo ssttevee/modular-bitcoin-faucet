@@ -7,7 +7,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
         $scope.remainingSpins = triesLeft;
         $scope.spinCfg = config;
         if(lastSpin != null) {
-            $scope.spin(lastSpin);
+            $scope.tempNumber = lastSpin;
             $scope.spinningDown = true;
             $scope.spinDownDone = true;
             $scope.spinDownCounter = 10;
@@ -25,13 +25,15 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
         $scope.spinDownDone = false;
     };
     $scope.spin = function(x) {
-        if(x == null) x = Math.random() * $scope.spinCfg.chance;
-        angular.element(document.querySelector('#rng-spinner')).text(("000" + (x|0)).slice(-4));
-        angular.element(document.querySelector('#rng-value')).text('= ' + $scope.getSatoshiValue(x | 0, $scope.formula) + " Satoshi");
+        $scope.tempNumber = x == null ? Math.random() * $scope.spinCfg.chance : x;
+        $scope.$apply();
         if($scope.spinningDown && $scope.spinDownCounter == 0) {
             clearInterval($scope.intervalId);
             $scope.spinDown();
         }
+    };
+    $scope.getSpinnerText = function(x) {
+        return ("000" + (x|0)).slice(-4);
     };
     $scope.getSatoshiValue = function(x, formula) {
         var base = $scope.spinCfg.base;
