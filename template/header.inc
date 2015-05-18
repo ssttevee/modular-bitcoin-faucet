@@ -1,7 +1,7 @@
 <?php
 $parts = explode('/', $_SERVER['REQUEST_URI']);
 unset($parts[count($parts) - 1]);
-$base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
+$base_url = 'https://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
 ?>
 <html ng-app="btcFaucetApp">
 <head>
