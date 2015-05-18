@@ -49,7 +49,7 @@ function _respond($response, $success = false) {
 
 function verifyCaptcha($challenge, $response) {
     $solvemedia = new \AllTheSatoshi\Util\SolveMedia('V6LOykA9eYCp4Avz38pUBmgekTkhKhPe', 'vw14n7mAbalPHj-7X29.xpwE1yCHaXku');
-    
-    if(!$response['success']) _respond($solvemedia->verify($challenge, $response));
+    $response = $solvemedia->verify($challenge, $response);
+    if(!$response['success']) _respond($response);
 }
 ?>

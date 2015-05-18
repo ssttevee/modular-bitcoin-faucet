@@ -45,6 +45,6 @@ class SolveMedia {
             return ["success" => false, "message" => "Hash verification failed.  Maybe there was an attack?"];
         }
 
-        return ["success" => $result[0], "message" => $result[1]];
+        return ["success" => trim($result[0]) === "true", "message" => $result[1]];
     }
 }
