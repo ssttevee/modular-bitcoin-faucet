@@ -39,7 +39,7 @@ class SolveMedia {
         $context  = stream_context_create($options);
         $result = explode("\n", file_get_contents($url, false, $context));
 
-        $hash = sha1( $result[0] . $challenge . $this->secret );
+        $hash = sha1( $result[0] . $challenge . $this->hashkey );
 
         if( $hash != $result[2] ) {
             return ["success" => false, "message" => "Hash verification failed.  Maybe there was an attack?"];
