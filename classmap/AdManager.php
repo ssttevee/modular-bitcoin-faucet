@@ -13,9 +13,9 @@ class AdManager {
 
     static private $net_codes = array(
         'a-ads' => 'return "<iframe data-aa=\"".$slot."\" src=\"https://ad.a-ads.com/".$slot."?size=".$width."x".$height."\" scrolling=\"no\" style=\"width: ".$width."px; height: ".$height."px; border:0px; padding:0;overflow:hidden;\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";',
-        'adbit' => 'return "<iframe scrolling=\"no\" frameborder=\"0\" src=\"//adbit.co/adspace.php?a=".$slot."\" style=\"overflow:hidden;width:".$width."px;height:".$height."px;\"></iframe>";',
+        'adbit' => 'return "<iframe scrolling=\"no\" frameborder=\"0\" src=\"http://adbit.co/adspace.php?a=".$slot."\" style=\"overflow:hidden;width:".$width."px;height:".$height."px;\"></iframe>";',
         'adsense' => 'return "<script type=\"text/javascript\">\n    google_ad_client = \"".self::$ad_slots[$network][$slot]["pubid"]."\";\n    google_ad_slot = \"".$slot."\";\n    google_ad_width = ".$width.";\n    google_ad_height = ".$height.";\n</script>\n<!-- ".self::$ad_slots[$network][$slot]["name"]." -->\n<script type=\"text/javascript\"\nsrc=\"//pagead2.googlesyndication.com/pagead/show_ads.js\">\n</script>";',
-        'bitclix' => 'return "<iframe scrolling=\"no\" style=\"border: 0; width: ".$width."px; height: ".$height."px;\" src=\"//ads.bcsyndication.com/get.php?s=".$slot."\"></iframe>";',
+        'bitclix' => 'return "<iframe scrolling=\"no\" style=\"border: 0; width: ".$width."px; height: ".$height."px;\" src=\"http://ads.bcsyndication.com/get.php?s=".$slot."\"></iframe>";',
     );
 
     static private $ad_slots = [

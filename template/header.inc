@@ -1,7 +1,10 @@
 <?php
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$domainName = $_SERVER['HTTP_HOST'];
 $parts = explode('/', $_SERVER['REQUEST_URI']);
 unset($parts[count($parts) - 1]);
-$base_url = 'https://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
+$base_url = $protocol . $_SERVER['HTTP_HOST'] . join('/',$parts) . '/';
 ?>
 <html ng-app="btcFaucetApp">
 <head>
