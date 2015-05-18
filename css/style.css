@@ -132,7 +132,7 @@ input[type='radio'] {
   input[type='radio']:disabled + label {
     opacity: 0.5;
     cursor: not-allowed; }
-  input[type='radio']:not(:disabled):hover + label {
+  input[type='radio']:not(:disabled) + label:hover {
     background: #ededed; }
   input[type='radio']:checked + label {
     background-image: none;
