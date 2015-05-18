@@ -11,7 +11,8 @@ $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr);
         </div>
     <?php } else { ?>
         <h1>Welcome to All The Satoshi Beta Faucet.</h1>
-        Your goal is to get the lowest number possible.<br>
+        Scroll down and press "Stop" to get a random number.<br>
+        The lower your number is, the more satoshi you will get.<br>
         The fractal curve will give you a low chance to get up to 2000 satoshi.<br>
         The radial curve will give you a high chance to get up to 250 satoshi.<br>
         <br>
