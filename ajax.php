@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-
 $allowed_actions = ["spin", "claim_spin", "payout", "login"];
 
 if($_GET["action"] == "login") {
@@ -30,11 +29,11 @@ $mgr = new \AllTheSatoshi\FaucetManager($_COOKIE['btcAddress']);
 if($action == "spin") {
     _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr))->spin($_POST['curve']));
 } else if($action == "claim_spin") {
-    verifyCaptcha($_POST['g-recaptcha-response']);
+    verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);
     _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr))->claim());
 } else if($action == "payout") {
     if(!isset($_POST['utransserv'])) _respond(["message" => "Payment method was not given."]);
-    verifyCaptcha($_POST['g-recaptcha-response']);
+    verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);
     _respond($mgr->payout($_POST['utransserv']));
 }
 
@@ -48,10 +47,10 @@ function _respond($response, $success = false) {
     die(json_encode($response));
 }
 
-function verifyCaptcha($input) {
-    $recaptcha = new \AllTheSatoshi\Util\ReCaptcha('6LdzugYTAAAAAAfTBw3_BqbRpeAywMkpL-NzdEp9');
-    $response = $recaptcha->verify($input);
+function verifyCaptcha($challenge, $response) {
+    $solvemedia = new \AllTheSatoshi\Util\SolveMedia('V6LOykA9eYCp4Avz38pUBmgekTkhKhPe', 'vw14n7mAbalPHj-7X29.xpwE1yCHaXku');
+    $response = $solvemedia->verify($challenge, $response);
 
-    if(!$response['success']) _respond(["message" => $recaptcha->getMessage($response["error-codes"][0])]);
+    if(!$response['success']) _respond(["message" => $solvemedia->getMessage($response["error-codes"][0])]);
 }
 ?>

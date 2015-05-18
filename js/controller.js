@@ -58,7 +58,7 @@ btcFaucetApp.controller('MainContentCtrl', ['$scope', '$http', '$cookies', '$not
     $scope.btcAddress = $cookies.btcAddress;
     $scope.satBalance = $cookies.satBalance;
     $scope.payout = function(paymentMethod) {
-        $http.post("./ajax.php?action=payout",{'g-recaptcha-response': grecaptcha.getResponse(), utransserv: paymentMethod}).success(function(data) {
+        $http.post("./ajax.php?action=payout",  {'captcha_challenge': ACPuzzle.get_challenge(),'captcha_response': ACPuzzle.get_response(), utransserv: paymentMethod}).success(function(data) {
             $notice.getEventForm({
                 event: data['success'] ? 'success' : 'error',
                 message: data['message'],

@@ -1,5 +1,10 @@
 btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', function($scope, $http, $notice) {
 
+    $scope.$watch('showCaptcha', function(newValue, oldValue) {
+        if(newValue) ACPuzzle.create('GFWOoXyYExNZgFBgTogSqX3Xgr.qUPWE', 'acwidget');
+        else ACPuzzle.destroy();
+    });
+
     $scope.init = function(lastSpin,formula,triesLeft,config) {
         $scope.lastSpin = lastSpin;
         $scope.number = lastSpin;
@@ -81,7 +86,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
         }
     };
     $scope.claimSpin = function() {
-        $http.post("./ajax.php?action=claim_spin",{claim:true,'g-recaptcha-response': grecaptcha.getResponse()}).success(function(data) {
+        $http.post("./ajax.php?action=claim_spin", {'captcha_challenge': ACPuzzle.get_challenge(),'captcha_response': ACPuzzle.get_response()}).success(function(data) {
             $notice.getEventForm({
                 event: data['success'] ? 'success' : 'error',
                 message: data['message'],

@@ -11,7 +11,8 @@ $base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="http://api.solvemedia.com/papi/challenge.ajax"></script>
+<?= $_GET['page'] == 'stats' ? '    <script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.1.5/highcharts.js"></script>' : ''?>
     <script src="js/controller.js" type="application/javascript"></script>
     <script src="js/<?= $_GET['page'] ?>.js" type="application/javascript"></script>
     <base href="<?= $base_url ?>">
