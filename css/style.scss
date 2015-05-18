@@ -156,10 +156,10 @@ input[type='radio'] {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  :not(:disabled):hover + label {
+  &:not(:disabled):hover + label {
     background: #ededed;
   }
-  :checked + label {
+  &:checked + label {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);

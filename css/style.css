@@ -132,9 +132,9 @@ input[type='radio'] {
   input[type='radio']:disabled + label {
     opacity: 0.5;
     cursor: not-allowed; }
-  input[type='radio'] :not(:disabled):hover + label {
+  input[type='radio']:not(:disabled):hover + label {
     background: #ededed; }
-  input[type='radio'] :checked + label {
+  input[type='radio']:checked + label {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
