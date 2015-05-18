@@ -23,5 +23,5 @@ $base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
     <div class="ad leaderboard"><?php AdManager::insert('bitclix','11719'); ?></div>
 </div>
 <div class="content" ng-controller="MainContentCtrl">
-    <div class="left"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69468'); ?></div><div class="ad medium-rectangle"><?php AdManager::insert('adsense','8882945326'); ?></div></div>
-    <div class="right"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69632'); ?></div><div class="ad medium-rectangle"><?php AdManager::insert('adsense','1220077720'); ?></div></div>
+    <div class="left"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69468'); ?></div><div class="ad skyscraper"><?php AdManager::insert('adsense','8882945326'); ?></div></div>
+    <div class="right"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69632'); ?></div><div class="ad skyscraper"><?php AdManager::insert('adsense','1220077720'); ?></div></div>
