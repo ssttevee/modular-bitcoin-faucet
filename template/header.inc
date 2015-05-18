@@ -7,13 +7,13 @@ $base_url = 'http://' . $_SERVER['SERVER_NAME'] . join('/',$parts) . '/';
 <head>
     <title>All The Satoshi! - Earn Free Bitcoins!</title>
     <link href="css/style.css" rel="stylesheet"/>
+    <link href="css/<?= $_GET['page'] ?>.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
     <script src="js/controller.js" type="application/javascript"></script>
     <script src="js/<?= $_GET['page'] ?>.js" type="application/javascript"></script>
-    <?= $_GET['page'] == 'dice' ? '<link href="css/dice.css" rel="stylesheet"/>' : ''?>
     <base href="<?= $base_url ?>">
 </head>
 <body>

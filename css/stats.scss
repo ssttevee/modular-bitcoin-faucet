@@ -1,0 +1,16 @@
+h2 {
+  text-align: left;
+  border-bottom: 1px solid gray;
+  padding-left: 20px;
+}
+ul {
+  list-style: none;
+  li {
+    position: relative;
+    text-align: left;
+    b {
+      position: absolute;
+      left: 200px;
+    }
+  }
+}

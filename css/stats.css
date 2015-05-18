@@ -1,0 +1,15 @@
+h2 {
+  text-align: left;
+  border-bottom: 1px solid gray;
+  padding-left: 20px; }
+
+ul {
+  list-style: none; }
+  ul li {
+    position: relative;
+    text-align: left; }
+    ul li b {
+      position: absolute;
+      left: 200px; }
+
+/*# sourceMappingURL=stats.css.map */

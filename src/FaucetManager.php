@@ -155,7 +155,7 @@ class FaucetManager {
             $stats["total_dispensed"] += $user["alltimebal"];
             $stats["total_withdrawn"] += $user["satwithdrawn"];
             $stats["total_spent"] += $user["satspent"];
-            $stats["total_referral_reward"] += $user["alltimeref"];
+            if(isset($user["alltimeref"])) $stats["total_referral_reward"] += $user["alltimeref"];
             if(!empty($user["referrer"])) {
                 $stats["total_referred_users"]++;
                 if(empty($referrals[$user["address"]])) $referrals[$user["address"]] = 0;
@@ -197,6 +197,6 @@ class FaucetManager {
     }
 
     function getStats() {
-        return ["success" => true, "data" => ["general" => $this->__stats(), "spinner" => (new Faucet\SpinnerFaucet($this))->__stats()]];
+        return array_merge($this->__stats(), ["spinner" => (new Faucet\SpinnerFaucet($this))->__stats()]);
     }
 }

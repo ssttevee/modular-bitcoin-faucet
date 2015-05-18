@@ -108,6 +108,7 @@ class SpinnerFaucet {
             if($entry["number"] < $stats["lowest_number"]) {
                 $stats["lowest_number"] = $entry["number"];
                 $stats["lowest_number_addr"] = $entry["address"];
+                $stats["lowest_number_curve"] = $entry["curve"];
             }
             $stats["avg_number"] = ($stats["avg_number"] + $entry["number"]) / ($stats["avg_number"] == 0 ? 1 : 2);
             $stats["avg_" . $entry["curve"] . "_number"] = ($stats["avg_" . $entry["curve"] . "_number"] + $entry["number"]) / ($stats["avg_" . $entry["curve"] . "_number"] == 0 ? 1 : 2);
