@@ -2,15 +2,9 @@
 
 namespace AllTheSatoshi\Faucet;
 
-class SpinnerFaucet {
+use AllTheSatoshi\Util\Config as _c;
 
-    public $config = [
-        "baseAmt" => 50,
-        "maxBonusAmt" => 2000,
-        "bonusChance" => 8000,
-        "spinInterval" => 600,
-        "maxSpins" => 3,
-    ];
+class SpinnerFaucet {
 
     private $fm;
 
@@ -23,41 +17,45 @@ class SpinnerFaucet {
         if($prop == 'curve') return isset($this->fm->lastSpin["curve"]) ? $this->fm->lastSpin["curve"] : 'fractal';
         if($prop == 'tries_left') return $this->getRemainingTries();
     }
+    
+    function _cfg($property) {
+        return _c::ini("spinner_faucet", $property);
+    }
 
     function getRemainingTries() {
         $lastSpin = $this->fm->lastSpin;
-        if(empty($lastSpin) || $lastSpin["time"] < time() - $this->config["spinInterval"]) return $this->config["maxSpins"];
-        else return $this->config["maxSpins"] - $lastSpin["tries"];
+        if(empty($lastSpin) || $lastSpin["time"] < time() - $this->_cfg("spinInterval")) return $this->_cfg("maxSpins");
+        else return $this->_cfg("maxSpins") - $lastSpin["tries"];
     }
 
     function getWaitTime() {
-        return $this->fm->lastSpin["time"] - (time() - $this->config["spinInterval"]);
+        return $this->fm->lastSpin["time"] - (time() - $this->_cfg("spinInterval"));
     }
 
     function spin($curve) {
         $lastSpin = $this->fm->lastSpin;
 
-        if(empty($lastSpin) || $lastSpin["time"] < time() - $this->config["spinInterval"]) {
+        if(empty($lastSpin) || $lastSpin["time"] < time() - $this->_cfg("spinInterval")) {
             $lastSpin["tries"] = 0;
-        } else if($lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["tries"] >= $this->config["maxSpins"] ||
-            $lastSpin["time"] > time() - $this->config["spinInterval"] && $lastSpin["number"] == null) {
-            return ["success" => false, "message" => "You have run out of tries. You can claim your current number or wait 10 minutes before spinning again.", "spin" => null, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]];
+        } else if($lastSpin["time"] > time() - $this->_cfg("spinInterval") && $lastSpin["tries"] >= $this->_cfg("maxSpins") ||
+            $lastSpin["time"] > time() - $this->_cfg("spinInterval") && $lastSpin["number"] == null) {
+            return ["success" => false, "message" => "You have run out of tries. You can claim your current number or wait 10 minutes before spinning again.", "spin" => null, "tries" => $this->_cfg("maxSpins") - $lastSpin["tries"]];
         }
 
-        $lastSpin["number"] = mt_rand() / mt_getrandmax() * $this->config["bonusChance"];
+        $lastSpin["number"] = mt_rand() / mt_getrandmax() * $this->_cfg("bonusChance");
         $lastSpin["time"] = time();
         $lastSpin["tries"]++;
         $lastSpin["curve"] = $curve;
 
         $this->fm->lastSpin = $lastSpin;
 
-        return ["success" => true, "message" => "You got " . ($lastSpin["number"] | 0) . "!", "spin" => $lastSpin["number"] | 0, "tries" => $this->config["maxSpins"] - $lastSpin["tries"]];
+        return ["success" => true, "message" => "You got " . ($lastSpin["number"] | 0) . "!", "spin" => $lastSpin["number"] | 0, "tries" => $this->_cfg("maxSpins") - $lastSpin["tries"]];
     }
 
     function claim() {
-        $base = $this->config["baseAmt"];
-        $max = $this->config["maxBonusAmt"];
-        $chance = $this->config["bonusChance"];
+        $base = $this->_cfg("baseAmt");
+        $max = $this->_cfg("maxBonusAmt");
+        $chance = $this->_cfg("bonusChance");
 
         $formulas = array(
             "fractal" => 'return $base + ($max + $max/$chance)/($x/25 + 1) - $max/$chance;',
@@ -71,11 +69,11 @@ class SpinnerFaucet {
         } else {
             $x = $lastSpin["number"];
 
-            $collection = $this->fm->db->selectCollection('spinner.history');
+            $collection = _c::getCollection('spinner.history');
             $collection->insert(["address" => $this->fm->address, "time" => time(), "number" => $lastSpin["number"], "curve" => $lastSpin["curve"], "tries" => $lastSpin["tries"]]);
 
             $lastSpin["number"] = null;
-            $lastSpin["tries"] = $this->config["maxSpins"];
+            $lastSpin["tries"] = $this->_cfg("maxSpins");
             $lastSpin["claims"] += 1;
 
             $this->fm->lastSpin = $lastSpin;
@@ -89,7 +87,7 @@ class SpinnerFaucet {
     function __stats() {
         $stats = [];
 
-        $collection = $this->fm->db->selectCollection('spinner.history');
+        $collection = _c::getCollection('spinner.history');
         $stats["fractal_count"] = $collection->count(["curve" => "fractal"]);
         $stats["radical_count"] = $collection->count(["curve" => "radical"]);
         $cursor = $collection->find([], ["address", "number", "tries", "time", "curve"]);

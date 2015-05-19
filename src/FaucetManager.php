@@ -2,27 +2,15 @@
 
 namespace AllTheSatoshi;
 
+use AllTheSatoshi\Util\Config as _c;
+
 class FaucetManager {
     private $account;
 
-    public $db;
     public $address;
-    public $config = [
-        "localtesting" => false,
-        "referralReward" => 0.1,
-        "paytoshiApiKey" => "5yv5hbjulxthon78tgs6jq2d87q6ukbblhv7nbhuh8b383bi4l",
-        "faucetBoxApiKey" => "AN5BvrbqHul2ARpXQRflZYM6Tiloh",
-    ];
 
-    function __construct($btcAddress, $config = array()) {
-//        $mongo = new \MongoClient();
-        $mongo = new \MongoClient('mongodb://admin:W-blx9dMT3xk@5550e877e0b8cd8cfa00016a-ssttevee.rhcloud.com:61276/');
-        $this->db = $mongo->btcfaucet;
+    function __construct($btcAddress) {
         $this->address = $btcAddress;
-
-        foreach ($config as $key => $value)
-            $this->config[$key] = $value;
-
         $this->account = $this->getAccount();
 
         // refresh cookies
@@ -31,7 +19,7 @@ class FaucetManager {
     }
 
     public function __destruct() {
-        $this->db->users->update(["address" => $this->address], $this->account);
+        _c::getCollection('users')->update(["address" => $this->address], $this->account);
     }
 
     public function __get($prop) {
@@ -48,7 +36,7 @@ class FaucetManager {
     }
 
     private function getAccount() {
-        $acc = $this->db->users->findOne(['address' => $this->address]);
+        $acc = _c::getCollection('users')->findOne(['address' => $this->address]);
         return empty($acc) ? $this->createAccount() : $acc;
     }
 
@@ -65,7 +53,7 @@ class FaucetManager {
                 "satwithdrawn" => 0,
                 "referrer" => isset($_COOKIE['ref']) || $_COOKIE['ref'] == $this->address ? $_COOKIE['ref'] : '',
             ];
-            if ($this->db->users->insert($newUser)) return $newUser;
+            if (_c::getCollection('users')->insert($newUser)) return $newUser;
             throw new \Exception("Failed to add user.");
         } else {
             throw new \Exception("Bitcoin address is invalid.");
@@ -82,13 +70,13 @@ class FaucetManager {
         if($this->satbalance < 1 && $this->refbalance < 1) return ["success" => false, "message" => "Your account balance is zero."];
 
         $amount_to_send = ($referral ? $this->refbalance : $this->satbalance) | 0;
-        if(!$this->config["localtesting"] && /*$this->address != '1AjefAG7Nibj8HzY3syMSN5iHWDkwZa5KN' &&*/ $amount_to_send > 0) {
+        if($amount_to_send > 0) {
             if ($service == 'paytoshi') {
-                $paytoshi = new \AllTheSatoshi\Payment\Paytoshi();
-                $res = $paytoshi->faucetSend($this->config["paytoshiApiKey"], $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
+                $paytoshi = new Payment\Paytoshi();
+                $res = $paytoshi->faucetSend(_c::ini("payout_services", "paytoshiApiKey"), $this->address, $amount_to_send, $_SERVER['REMOTE_ADDR'], $referral);
                 if (isset($res['error'])) return array_merge($res, ["success" => false]);
             } else if ($service == 'faucetbox') {
-                $faucetbox = new \AllTheSatoshi\Payment\FaucetBOX($this->config["faucetBoxApiKey"]);
+                $faucetbox = new Payment\FaucetBOX(_c::ini("payout_services", "faucetboxApiKey"));
                 $res = $faucetbox->send($this->address, $amount_to_send, (string) $referral);
                 if (!$res["success"]) return ["success" => false, "message" => $res["message"]];
             }
@@ -101,7 +89,7 @@ class FaucetManager {
         else $this->satbalance -= $satoshi_sent;
 
         if($satoshi_sent > 0) {
-            $this->db->selectCollection('payouts')->insert(["address" => $this->address, "amount" => $satoshi_sent, "service" => $service, "referral" => $referral, "time" => time()]);
+            _c::getCollection('payouts')->insert(["address" => $this->address, "amount" => $satoshi_sent, "service" => $service, "referral" => $referral, "time" => time()]);
         }
 
         if (!$referral && $this->refbalance >= 1) {
@@ -116,8 +104,7 @@ class FaucetManager {
             'faucetbox' => "<a ng-href=\"https://faucetbox.com/en/check/{{btcAddress}}\" target=\"_blank\">FaucetBOX</a>",
         ];
 
-        if($this->config["localtesting"]) return ["success" => true, "message" => ($satoshi_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!"];
-        else if($service == 'paytoshi' && isset($res["error"]) && $res["error"]) return ["success" => false, "message" => $res["message"]];
+        if($service == 'paytoshi' && isset($res["error"]) && $res["error"]) return ["success" => false, "message" => $res["message"]];
         else if($service == 'faucetbox' && !$res["success"]) return ["success" => false, "message" => $res["message"]];
         else return ["success" => true, "message" => ($satoshi_sent) . " satoshi was sent to your " . $service_check_url[$service] . " account!", "amount" => $satoshi_sent];
     }
@@ -129,7 +116,7 @@ class FaucetManager {
     }
 
     function rewardReferrer($referrer, $amount) {
-        $amount *= $this->config["referralReward"];
+        $amount *= _c::ini("general", "referralReward");
         if(isset($referrer) && strlen($referrer) > 0) {
             $ref = new FaucetManager($referrer);
             $ref->refbalance += $amount;
@@ -139,11 +126,11 @@ class FaucetManager {
 
     function __stats() {
         $stats = [];
-        $stats["user_count"] = $this->db->selectCollection('users')->count();
-        $stats["paytoshi_payouts"] = $this->db->selectCollection('payouts')->count(["service" => "paytoshi"]);
-        $stats["faucetbox_payouts"] = $this->db->selectCollection('payouts')->count(["service" => "faucetbox"]);
-        $users = $this->db->selectCollection('users')->find([], ["address", "alltimeref", "alltimebal", "satspent", "satwithdrawn", "referrer"]);
-        $payouts = $this->db->selectCollection('payouts')->find([], ["address", "amount", "referral", "time"]);
+        $stats["user_count"] = _c::getCollection('users')->count();
+        $stats["paytoshi_payouts"] = _c::getCollection('payouts')->count(["service" => "paytoshi"]);
+        $stats["faucetbox_payouts"] = _c::getCollection('payouts')->count(["service" => "faucetbox"]);
+        $users = _c::getCollection('users')->find([], ["address", "alltimeref", "alltimebal", "satspent", "satwithdrawn", "referrer"]);
+        $payouts = _c::getCollection('payouts')->find([], ["address", "amount", "referral", "time"]);
 
         $referrals = [];
         $stats["total_dispensed"] = 0;
