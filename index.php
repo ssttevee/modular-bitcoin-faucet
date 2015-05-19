@@ -6,7 +6,7 @@ use \AllTheSatoshi\FaucetManager;
 
 
 if(isset($_GET['r']) && (new FaucetManager($_GET['r']))->claimed > 0) setcookie('ref', $_GET['r'], time() + 3600, '/');
-if(isset($_COOKIE['btcAddress'])) $mgr = new FaucetManager($_COOKIE['btcAddress']);
+if(isset($_COOKIE['btcAddress'])) $mgr = FaucetManager::_($_COOKIE['btcAddress']);
 
 
 // Account info bar

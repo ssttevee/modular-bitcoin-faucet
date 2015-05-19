@@ -24,13 +24,13 @@ else if(!in_array($_GET["action"], $allowed_actions)) _respond(["message" => "Gi
 
 
 $action = $_GET["action"];
-$mgr = new \AllTheSatoshi\FaucetManager($_COOKIE['btcAddress']);
+$mgr = \AllTheSatoshi\FaucetManager::_($_COOKIE['btcAddress']);
 
 if($action == "spin") {
-    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr))->spin($_POST['curve']));
+    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address))->spin($_POST['curve']));
 } else if($action == "claim_spin") {
     verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);
-    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr))->claim());
+    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address))->claim());
 } else if($action == "payout") {
     if(!isset($_POST['utransserv'])) _respond(["message" => "Payment method was not given."]);
     verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);

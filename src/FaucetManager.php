@@ -5,9 +5,15 @@ namespace AllTheSatoshi;
 use AllTheSatoshi\Util\Config as _c;
 
 class FaucetManager {
-    private $account;
+    static private $instances = [];
+
+    static public function _($btcAddress) {
+        if(!isset(self::$instances[$btcAddress])) self::$instances[$btcAddress] = new FaucetManager($btcAddress);
+        return self::$instances[$btcAddress];
+    }
 
     public $address;
+    private $account;
 
     function __construct($btcAddress) {
         $this->address = $btcAddress;
@@ -18,21 +24,21 @@ class FaucetManager {
         setCookie('satBalance', $this->getBalance(), time()+3600, '/');
     }
 
-    public function __destruct() {
-        _c::getCollection('users')->update(["address" => $this->address], $this->account);
-    }
-
     public function __get($prop) {
         if(isset($this->account[$prop])) return $this->account[$prop];
         else if(in_array($prop, ["address", "referrer"])) $this->$prop = "";
         else if(in_array($prop, ["curve"])) $this->$prop = "radical";
-        else if(in_array($prop, ["lastSpin"])) $this->$prop = [];
         else $this->$prop = 0;
         return $this->__get($prop);
     }
 
     public function __set($prop, $val) {
         $this->account[$prop] = $val;
+        if(is_array($val)) {
+            throw new \Exception("Cannot set array value");
+        } else {
+            _c::getCollection('users')->update(["address" => $this->address], ['$set' => [$prop => $val]]);
+        }
     }
 
     private function getAccount() {

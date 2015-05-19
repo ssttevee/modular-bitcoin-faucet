@@ -1,7 +1,7 @@
 <?php
-$faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr);
+$faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
 ?>
-<div class="middle left" ng-controller="SpinnerFaucetCtrl" ng-init="init(<?= $faucet->lastNumber ?>, '<?= $faucet->curve ?>', <?= $faucet->tries_left ?>, {base: <?= $faucet->_cfg("baseAmt") ?>, max: <?= $faucet->_cfg("maxBonusAmt") ?>, chance: <?= $faucet->_cfg("bonusChance") ?>})">
+<div class="middle left" ng-controller="SpinnerFaucetCtrl" ng-init="init(<?= $faucet->number == null ? 'null' : $faucet->number ?>, '<?= $faucet->curve ?>', <?= $faucet->tries_left ?>, {base: <?= $faucet->_cfg("baseAmt") ?>, max: <?= $faucet->_cfg("maxBonusAmt") ?>, chance: <?= $faucet->_cfg("bonusChance") ?>})">
     <?= $top_bar ?>
     <?php if($faucet->getRemainingTries() < 1 && $mgr->lastSpin["number"] == null) { ?>
         <h2>Time until next claim</h2>
