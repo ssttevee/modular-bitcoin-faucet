@@ -13,11 +13,10 @@ class FaucetManager {
     }
 
     public $address;
-    private $account;
 
     function __construct($btcAddress) {
         $this->address = $btcAddress;
-        $this->account = $this->getAccount();
+        $this->createAccount();
 
         // refresh cookies
         setCookie('btcAddress', $this->address, time()+3600, '/');
@@ -25,15 +24,19 @@ class FaucetManager {
     }
 
     public function __get($prop) {
-        if(isset($this->account[$prop])) return $this->account[$prop];
-        else if(in_array($prop, ["address", "referrer"])) $this->$prop = "";
-        else if(in_array($prop, ["curve"])) $this->$prop = "radical";
-        else $this->$prop = 0;
-        return $this->__get($prop);
+        $r = _c::getCollection('users')->findOne(["address" => $this->address], [$prop]);
+
+        if(is_array($r[$prop])) return null;
+        else if(!isset($r[$prop])) {
+            if (in_array($prop, ["address", "referrer"])) $r[$prop] = "";
+            else if (in_array($prop, ["curve"])) $r[$prop] = "radical";
+            else $r[$prop] = 0;
+        }
+
+        return $r[$prop];
     }
 
     public function __set($prop, $val) {
-        $this->account[$prop] = $val;
         if(is_array($val)) {
             throw new \Exception("Cannot set array value");
         } else {
@@ -41,13 +44,9 @@ class FaucetManager {
         }
     }
 
-    private function getAccount() {
-        $acc = _c::getCollection('users')->findOne(['address' => $this->address]);
-        return empty($acc) ? $this->createAccount() : $acc;
-    }
-
     private function createAccount() {
-        if(\LinusU\Bitcoin\AddressValidator::isValid($_POST['btcAddress'])) {
+        if(_c::getCollection('users')->count(['address' => $this->address]) > 0) return null;
+        if(\LinusU\Bitcoin\AddressValidator::isValid($this->address)) {
             $newUser = [
                 "address" => $this->address,
                 "created" => time(),
@@ -124,7 +123,7 @@ class FaucetManager {
     function rewardReferrer($referrer, $amount) {
         $amount *= _c::ini("general", "referralReward");
         if(isset($referrer) && strlen($referrer) > 0) {
-            $ref = new FaucetManager($referrer);
+            $ref = FaucetManager::_($referrer);
             $ref->refbalance += $amount;
             $ref->alltimeref += $amount;
         }

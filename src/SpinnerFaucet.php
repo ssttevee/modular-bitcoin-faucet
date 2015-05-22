@@ -5,32 +5,22 @@ namespace AllTheSatoshi\Faucet;
 use AllTheSatoshi\FaucetManager;
 use AllTheSatoshi\Util\Config as _c;
 
-class SpinnerFaucet {
-
-    private $address;
+class SpinnerFaucet extends BaseFaucet {
 
     function __construct($btcAddress) {
-        $this->address = $btcAddress;
+        parent::__construct("lastSpin", $btcAddress);
     }
 
     function __get($prop) {
         if($prop == 'tries_left') return $this->getRemainingTries();
 
-        $r = _c::getCollection('users')->findOne(["address" => $this->address], ["lastSpin".".".$prop]);
+        $val = parent::__get($prop);
 
-        if(empty($r["lastSpin"])) return null;
-        $lastSpin = $r["lastSpin"];
-
-        if(empty($lastSpin[$prop])) {
+        if($val == null) {
             if ($prop == 'curve') return 'fractal';
-            else return null;
         }
 
-        return $lastSpin[$prop];
-    }
-
-    function __set($prop, $val) {
-        _c::getCollection('users')->update(["address" => $this->address], ['$set' => ["lastSpin".".".$prop => $val]]);
+        return $val;
     }
     
     function _cfg($property) {
