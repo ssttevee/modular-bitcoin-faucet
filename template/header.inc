@@ -27,4 +27,4 @@ $base_url = $protocol . $_SERVER['HTTP_HOST'] . join('/',$parts) . '/';
 </div>
 <div class="content" ng-controller="MainContentCtrl">
     <div class="left"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69468'); ?></div><br><div class="ad skyscraper"><?php AdManager::insert('adsense','8882945326'); ?></div></div>
-    <div class="right"><div class="ad medium-rectangle"><?php AdManager::insert('a-ads','69632'); ?></div><br><div class="ad skyscraper"><?php AdManager::insert('adsense','1220077720'); ?></div></div>
+    <div class="right"><div class="ad medium-rectangle"><?php AdManager::insert('bitclix','11948'); ?></div><br><div class="ad skyscraper"><?php AdManager::insert('adsense','1220077720'); ?></div></div>

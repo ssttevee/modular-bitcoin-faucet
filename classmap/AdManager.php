@@ -64,7 +64,7 @@ class AdManager {
             ],
         ],
         'bitclix' => [
-            '11719' => [
+            '11719' => [ /* Site Header */
                 'width' => 728,
                 'height' => 90,
             ],
@@ -72,11 +72,15 @@ class AdManager {
                 'width' => 468,
                 'height' => 60,
             ],
+            '11948' => [ /* Right Column Top */
+                'width' => 300,
+                'height' => 250,
+            ],
         ],
     ];
 
     static function insert($network, $slot, $ignoreblacklist = false) {
-        if(isset($_GET["show_ads"])) $ignoreblacklist = $_GET["show_ads"];
+        if(isset($_GET["show_ads"])) $ignoreblacklist = true;
         if(!$ignoreblacklist && (in_array($_SERVER['REMOTE_ADDR'], self::$ip_blacklist) || in_array($_SERVER['HTTP_CF_CONNECTING_IP'], self::$ip_blacklist))) return;
 
         $width = self::$ad_slots[$network][$slot]['width'];
