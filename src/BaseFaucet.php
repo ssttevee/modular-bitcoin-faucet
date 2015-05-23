@@ -5,7 +5,7 @@ namespace AllTheSatoshi\Faucet;
 use AllTheSatoshi\FaucetManager;
 use AllTheSatoshi\Util\Config as _c;
 
-class BaseFaucet {
+abstract class BaseFaucet {
 
     public $address;
     public $name;
@@ -29,6 +29,8 @@ class BaseFaucet {
     function __set($prop, $val) {
         _c::getCollection('users')->update(["address" => $this->address], ['$set' => [$this->name.".".$prop => $val]]);
     }
+
+    abstract function ajax($action, $post);
 
     function dispense($amount) {
         FaucetManager::_($this->address)->addBalance($amount);

@@ -2,46 +2,57 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-$allowed_actions = ["spin", "claim_spin", "payout", "login"];
+if(!array_key_exists("action", $_GET)) _respond("Action was not specified.");
+$action = $_GET["action"];
 
-if($_GET["action"] == "login") {
-    if(!isset($_POST['btcAddress'])) _respond(["message" => "Bitcoin address was not given."]);
+if($action == "login") {
+    if(!array_key_exists("btcAddress", $_POST)) _respond("Bitcoin address was not specified.");
     if(\LinusU\Bitcoin\AddressValidator::isValid($_POST['btcAddress'])) {
         try {
             $mgr = new \AllTheSatoshi\FaucetManager($_POST['btcAddress']);
-            _respond(["message" => "Login successful"], true);
+            _respond("Login successful", true);
         } catch(Exception $e) {
-            _respond(["message" => $e->getMessage()]);
+            _respond($e->getMessage());
         }
     } else {
-        _respond(["message" => "Given bitcoin address is invalid."]);
+        _respond("Bitcoin address is invalid.");
     }
 }
 
-if(!isset($_COOKIE['btcAddress'])) _respond(["error" => "You're not logged in."]);
-else if(!isset($_GET["action"])) _respond(["message" => "Action was not given."]);
-else if(!in_array($_GET["action"], $allowed_actions)) _respond(["message" => "Given action is not allowed."]);
+if(!array_key_exists("btcAddress", $_COOKIE)) _respond("You're not logged in.");
 
-
-$action = $_GET["action"];
 $mgr = \AllTheSatoshi\FaucetManager::_($_COOKIE['btcAddress']);
 
-if($action == "spin") {
-    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address))->spin($_POST['curve']));
-} else if($action == "claim_spin") {
+$_POST['is_human'] = false;
+if(array_key_exists('captcha_challenge', $_POST)) {
     verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);
-    _respond((new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address))->claim());
-} else if($action == "payout") {
-    if(!isset($_POST['utransserv'])) _respond(["message" => "Payment method was not given."]);
-    verifyCaptcha($_POST['captcha_challenge'], $_POST['captcha_response']);
-    _respond($mgr->payout($_POST['utransserv']));
+    $_POST['is_human'] = true;
 }
 
+if(array_key_exists("game", $_GET)) {
+    $faucet = null;
+    switch($_GET["game"]) {
+        case "curve-rng":
+            $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
+            break;
+        default:
+            _respond("Faucet does not exist.");
+    }
+    _respond($faucet->ajax($action, $_POST));
+} else {
+    if($action == "payout") {
+        if (!isset($_POST['utransserv'])) _respond("Payment method was not given.");
+        if(!$_POST['is_human']) _respond("not_human");
+        _respond($mgr->payout($_POST['utransserv']));
+    }
+}
 
-_respond(["message" => "Something went wrong."]);
+_respond("Something went wrong.");
 
 
 function _respond($response, $success = false) {
+    if($response == "not_human") $response = "Human verification missing.";
+    if(is_string($response)) $response = ["message" => $response];
     if(!isset($response["success"])) $response["success"] = $success;
     header('Content-Type: application/json');
     die(json_encode($response));

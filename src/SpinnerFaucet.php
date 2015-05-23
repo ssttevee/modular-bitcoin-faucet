@@ -27,6 +27,17 @@ class SpinnerFaucet extends BaseFaucet {
         return _c::ini("spinner_faucet", $property);
     }
 
+    function ajax($action, $post) {
+        if ($action == "spin") {
+            if(array_key_exists("curve", $post)) return $this->spin($post['curve']);
+            else return "Curve was not specified.";
+        } else if ($action == "claim_spin") {
+            if(!$post["is_human"]) return "not_human";
+            return $this->claim();
+        }
+        return "Action not allowed.";
+    }
+
     function getRemainingTries() {
         if($this->time == null || $this->time < time() - $this->_cfg("spinInterval")) return $this->_cfg("maxSpins");
         else return $this->_cfg("maxSpins") - $this->tries;
