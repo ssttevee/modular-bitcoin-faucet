@@ -1,0 +1,309 @@
+.card {
+  display: inline-block;
+  width: 140px;
+  height: 190px;
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 140px;
+    height: 190px;
+    background: url('../assets/playing_cards.png') no-repeat;
+  }
+  &.animate {
+    -webkit-transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1); /* older webkit */
+    -webkit-transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    -moz-transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    -o-transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1.275); /* easeOutBack */
+
+    -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1); /* older webkit */
+    -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    -moz-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    -o-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.275); /* easeOutBack */
+  }
+
+  &.red-back:before {
+    background-position: -840px 0px;
+  }
+  &.green-back:before {
+    background-position: -840px -190px;
+  }
+  &.blue-back:before {
+    background-position: -840px -380px;
+  }
+
+  &.C {
+    &A:before {
+      background-position: -560px -570px;
+    }
+    &T:before {
+      background-position: -560px -760px;
+    }
+    &2:before {
+      background-position: -280px -1140px;
+    }
+    &3:before {
+      background-position: -700px -190px;
+    }
+    &4:before {
+      background-position: -700px -0px;
+    }
+    &5:before {
+      background-position: -560px -1710px;
+    }
+    &6:before {
+      background-position: -560px -1520px;
+    }
+    &7:before {
+      background-position: -560px -1330px;
+    }
+    &8:before {
+      background-position: -560px -1140px;
+    }
+    &9:before {
+      background-position: -560px -950px;
+    }
+    &J:before {
+      background-position: -560px -380px;
+    }
+    &K:before {
+      background-position: -560px -190px;
+    }
+    &Q:before {
+      background-position: -560px -0px;
+    }
+  }
+
+  &.D {
+    &T:before {
+      background-position: -420px -190px;
+    }
+    &2:before {
+      background-position: -420px -1710px;
+    }
+    &3:before {
+      background-position: -420px -1520px;
+    }
+    &4:before {
+      background-position: -420px -1330px;
+    }
+    &5:before {
+      background-position: -420px -1140px;
+    }
+    &6:before {
+      background-position: -420px -950px;
+    }
+    &7:before {
+      background-position: -420px -760px;
+    }
+    &8:before {
+      background-position: -420px -570px;
+    }
+    &9:before {
+      background-position: -420px -380px;
+    }
+    &A:before {
+      background-position: -420px -0px;
+    }
+    &J:before {
+      background-position: -280px -1710px;
+    }
+    &K:before {
+      background-position: -280px -1520px;
+    }
+    &Q:before {
+      background-position: -280px -1330px;
+    }
+  }
+
+  &.H {
+    &T:before {
+      background-position: -140px -1520px;
+    }
+    &2:before {
+      background-position: -700px -380px;
+    }
+    &3:before {
+      background-position: -280px -950px;
+    }
+    &4:before {
+      background-position: -280px -760px;
+    }
+    &5:before {
+      background-position: -280px -570px;
+    }
+    &6:before {
+      background-position: -280px -380px;
+    }
+    &7:before {
+      background-position: -280px -190px;
+    }
+    &8:before {
+      background-position: -280px -0px;
+    }
+    &9:before {
+      background-position: -140px -1710px;
+    }
+    &A:before {
+      background-position: -140px -1330px;
+    }
+    &J:before {
+      background-position: -140px -1140px;
+    }
+    &K:before {
+      background-position: -140px -950px;
+    }
+    &Q:before {
+      background-position: -140px -760px;
+    }
+  }
+
+  &.S {
+    &T:before {
+      background-position: -0px -760px;
+    }
+    &2:before {
+      background-position: -140px -380px;
+    }
+    &3:before {
+      background-position: -140px -190px;
+    }
+    &4:before {
+      background-position: -140px -0px;
+    }
+    &5:before {
+      background-position: -0px -1710px;
+    }
+    &6:before {
+      background-position: -0px -1520px;
+    }
+    &7:before {
+      background-position: -0px -1330px;
+    }
+    &8:before {
+      background-position: -0px -1140px;
+    }
+    &9:before {
+      background-position: -0px -950px;
+    }
+    &A:before {
+      background-position: -0px -570px;
+    }
+    &J:before {
+      background-position: -0px -380px;
+    }
+    &K:before {
+      background-position: -0px -190px;
+    }
+    &Q:before {
+      background-position: -0px -0px;
+    }
+  }
+
+  &.joker:before {
+    background-position: -140px -570px;
+  }
+}
+#table {
+  height: 190px;
+  .holder {
+    width: 140px;
+    height: 190px;
+    display: inline-block;
+    margin: 0;
+    border-radius: 5px;
+  }
+  #draw-deck {
+    width: 50%;
+    text-align: center;
+    float:left;
+    .holder {
+      background: #dddddd;
+    }
+  }
+  #burn-deck {
+    width: 50%;
+    text-align: center;
+    float:left;
+    .holder {
+      width: 140px;
+      height: 190px;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      .card {
+        z-index: -100;
+      }
+    }
+    .holder:before {
+      content: "";
+      display: inline-block;
+      width: 140px;
+      height: 190px;
+      box-sizing: border-box;
+      background: url(../assets/burn.svg) no-repeat center center transparent;
+      background-size: 50px;
+      border-radius: 5px;
+      border: 5px dashed #dddddd;
+    }
+  }
+}
+#hand {
+  box-sizing: content-box;
+  width: 560px;
+  height: 190px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  background-color: #194D1E;
+  border-radius: 10px;
+  padding: 10px 10px;
+
+  .ghost {
+    &:before {
+      content: "";
+      display: inline-block;
+      width: 140px;
+      height: 190px;
+      box-sizing: border-box;
+      background: no-repeat center center transparent;
+      border-radius: 5px;
+      border: 5px dashed #dddddd;
+    }
+  }
+
+  .card {
+    text-align: center;
+    display: inline-block;
+  }
+
+  /* one item */
+   .card:first-child:nth-last-child(1) {
+    width: 100%;
+  }
+
+  /* two items */
+   .card:first-child:nth-last-child(2),
+   .card:first-child:nth-last-child(2) ~  .card {
+    width: 50%;
+  }
+
+  /* three items */
+   .card:first-child:nth-last-child(3),
+   .card:first-child:nth-last-child(3) ~  .card {
+    width: 33.3333%;
+  }
+
+  /* four items */
+   .card:first-child:nth-last-child(4),
+   .card:first-child:nth-last-child(4) ~  .card {
+    width: 25%;
+  }
+
+  /* five items */
+   .card:first-child:nth-last-child(5),
+   .card:first-child:nth-last-child(5) ~  .card {
+    width: 18.8%;
+  }
+}
