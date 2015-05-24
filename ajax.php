@@ -2,6 +2,8 @@
 ob_start();
 require_once __DIR__ . "/vendor/autoload.php";
 
+use AllTheSatoshi\Util\Config;
+
 if(!array_key_exists("action", $_GET)) _respond("Action was not specified.");
 $action = $_GET["action"];
 
@@ -67,7 +69,7 @@ function _respond($response, $success = false) {
 }
 
 function verifyCaptcha($challenge, $response) {
-    $solvemedia = new \AllTheSatoshi\Util\SolveMedia('V6LOykA9eYCp4Avz38pUBmgekTkhKhPe', 'vw14n7mAbalPHj-7X29.xpwE1yCHaXku');
+    $solvemedia = new \AllTheSatoshi\Util\SolveMedia(Config::ini("captcha_services", "solveMediaPrivateKey"), Config::ini("captcha_services", "solveMediaHashKey"));
     $response = $solvemedia->verify($challenge, $response);
     if(!$response['success']) _respond($response);
 }
