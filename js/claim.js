@@ -4,12 +4,11 @@ btcFaucetApp.directive('claimForm', ['$notice', function($notice) {
 
         scope.claim = function() {
             var data = element.serializeArray();
-            $.ajax({
+            $.ajax("./ajax/" + attrs.game + "/claim.json", {
                 method: "POST",
-                url: "./ajax/" + attrs.game + "/claim.json",
+                dataType: "json",
                 data: {captcha_challenge: data.adcopy_challenge, captcha_response: data.adcopy_response}
-            }).done(function(msg) {
-                var json = JSON.parse(msg);
+            }).done(function(json) {
                 $notice.getEventForm({
                     event: json.success ? "success" : "error",
                     message: json.message
