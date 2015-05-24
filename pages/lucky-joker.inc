@@ -30,6 +30,8 @@ $revealedjs = implode("','", $revealed == null ? [] : $revealed);
     </p>
     <br>
     <div id="hand">
-        <div ng-repeat="cardId in revealedCards" class="card animate" ng-class="cardId"/>
+        <div ng-repeat="cardId in revealedCards" class="card animate" ng-class="cardId"></div>
     </div>
+    <br>
+    <button onclick="location.href='./collect-lucky-joker.html'">Collect {{getSatoshiValue()}} Satoshi</button><br>
 </div>
