@@ -1,4 +1,5 @@
 Options +FollowSymLinks
 RewriteEngine On
+RewriteRule ^collect-([a-z\-]+)\.html$ index.php?page=claim&game=$1 [L]
 RewriteRule ^([a-z\-]+)\.html$ index.php?page=$1 [L]
 RewriteRule ^ajax/([a-z\-]+)/([a-z\-]+).json$ ajax.php?game=$1&action=$2 [L]

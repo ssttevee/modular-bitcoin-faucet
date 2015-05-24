@@ -31,6 +31,7 @@ abstract class BaseFaucet {
     }
 
     abstract function ajax($action, $post);
+    abstract function satoshi();
 
     function dispense($amount) {
         FaucetManager::_($this->address)->addBalance($amount);
