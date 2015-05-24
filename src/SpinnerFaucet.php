@@ -63,20 +63,25 @@ class SpinnerFaucet extends BaseFaucet {
         return ["success" => true, "message" => "You got " . ($this->number | 0) . "!", "spin" => $this->number | 0, "tries" => $this->_cfg("maxSpins") - $this->tries];
     }
 
-    function claim() {
+    function satoshi() {
         $base = $this->_cfg("baseAmt");
         $max = $this->_cfg("maxBonusAmt");
         $chance = $this->_cfg("bonusChance");
+        $x = $this->number;
 
         $formulas = array(
             "fractal" => 'return $base + ($max + $max/$chance)/($x/25 + 1) - $max/$chance;',
             "radical" => '$max /= 20;return $base - sqrt($max*$max/$chance*$x) + $max;',
         );
 
+        return eval($formulas[$this->curve]);
+    }
+
+    function claim() {
         if($this->number == null) {
             return ["success" => false, "amount" => 0, "message" => "no satoshi to claim"];
         } else {
-            $x = $this->number;
+            $amount = $this->satoshi();
 
             $collection = _c::getCollection('spinner.history');
             $collection->insert(["address" => $this->address, "time" => time(), "number" => $this->number, "curve" => $this->curve, "tries" => $this->tries]);
@@ -85,7 +90,6 @@ class SpinnerFaucet extends BaseFaucet {
             $this->tries = $this->_cfg("maxSpins");
             $this->claims += 1;
 
-            $amount = eval($formulas[$this->curve]);
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
         }
