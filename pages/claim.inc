@@ -4,7 +4,7 @@ if($_GET["game"] == "lucky-joker") $faucet = new \AllTheSatoshi\Faucet\CardsFauc
 ?>
 <div class="middle left">
     <?= $top_bar ?>
-    <h2>Complete the captcha to collect your <?= $fuacet->satoshi(); ?> satoshi</h2>
+    <h2>Complete the captcha to collect your <?= $faucet->satoshi(); ?> satoshi</h2>
     <h1 ng-show="captchaShowPayout">Payout to {{paymentMethod}}</h1>
     <div id="acwidget"></div>
     <a href="//adbit.co/?a=Advertise&b=View_Bid&c=TU5BRHOMMS3FI" target="_blank" style="margin: 0 auto;">&#8659; Your Ad Here &#8659;</a>
