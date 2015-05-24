@@ -67,6 +67,14 @@ class CardsFaucet extends BaseFaucet {
         }
     }
 
+    function isReady() {
+        return $this->getWaitTime() <= 0;
+    }
+
+    function getWaitTime() {
+        return $this->last_game->sec - (time() - _c::ini("general","dispenseInterval"));
+    }
+
     function isInGame() {
         return $this->hash != null;
     }

@@ -1,5 +1,11 @@
 <?php
 $faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
+
+if(!$faucet->isReady()) {
+    ob_flush();
+    header("Location: ./wait-lucky-joker.html");
+}
+
 $revealed = $faucet->revealed;
 $revealedjs = implode("','", $revealed == null ? [] : $revealed);
 ?>
