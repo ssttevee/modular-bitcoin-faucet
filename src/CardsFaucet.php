@@ -61,7 +61,7 @@ class CardsFaucet extends BaseFaucet {
             } catch(\Exception $e) {
                 return $e->getMessage();
             }
-        } else if($action == "collect") {
+        } else if($action == "claim") {
             if(!$post["is_human"]) return "not_human";
             return $this->claim();
         }
@@ -171,10 +171,10 @@ class CardsFaucet extends BaseFaucet {
             $amount = $this->satoshi();
 
             // log this claim
-            _c::getCollection($this->name . ".history")->insert(["address" => $this->address, "hand" => $revealed, "time" => time()]);
+            _c::getCollection($this->name . ".history")->insert(["address" => $this->address, "hand" => $revealed, "time" => new \MongoDate()]);
 
             // clear the table and set the time
-            _c::getCollection("users")->update(["address" => $this->address], ['$unset' => [$this->name . ".deck", $this->name . ".revealed", $this->name . ".burnt", $this->name . ".secret", $this->name . ".hash"], 'time' => time()]);
+            _c::getCollection("users")->update(["address" => $this->address], ['$set' => [$this->name => ['last_game' => new \MongoDate()]]]);
 
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
