@@ -68,7 +68,7 @@ class CardsFaucet extends BaseFaucet {
     }
 
     function isInGame() {
-        return $this->deck != null;
+        return $this->hash != null;
     }
 
     function newGame($shuffle_times) {
@@ -150,7 +150,17 @@ class CardsFaucet extends BaseFaucet {
         else if((count($cv)>3 && $cv[0]==$cv[1] && $cv[2]==$cv[3]) || (count($cv)>4 && $cv[0]==$cv[1] && $cv[3]==$cv[4]) || (count($cv)>4 && $cv[1]==$cv[2] && $cv[3]==$cv[4])) $multiplier = 3; // two pairs
         else if((count($cv)>1 && $cv[0]==$cv[1]) || (count($cv)>2 && $cv[1]==$cv[2]) || (count($cv)>3 && $cv[2]==$cv[3]) || (count($cv)>4 && $cv[3]==$cv[4])) $multiplier = 2; // one pair
         
-        return pow($multiplier, 1.5);
+        return pow($multiplier, 1.8);
+    }
+
+    function satoshi() {
+        $amount = 0;
+        $revealed = $this->revealed;
+        foreach($revealed as $card) {
+            $value = substr($card, 1);
+            $amount += ($value == "A" ? 14 : ($value == "T" ? 10 : ($value == "J" ? 11 : ($value == "Q" ? 12 : ($value == "K" ? 13 : ($value == "oker" ? 26 : intval($value) ) ) ) ) ) );
+        }
+        return $amount * (6 - count($revealed))/2 * $this->getComboMultiplier($revealed);
     }
 
     function claim() {
@@ -158,12 +168,14 @@ class CardsFaucet extends BaseFaucet {
         if(count($revealed) <= 0) {
             return "Nothing to collect";
         } else {
-            $amount = 0;
-            foreach($revealed as $card) {
-                $value = substr($card, 1);
-                $amount += ($value == "A" ? 14 : ($value == "T" ? 10 : ($value == "J" ? 11 : ($value == "Q" ? 12 : ($value == "K" ? 13 : ($value == "oker" ? 26 : intval($value) ) ) ) ) ) );
-            }
-            $amount *= (6 - count($revealed))/2 * $this->getComboMultiplier($revealed);
+            $amount = $this->satoshi();
+
+            // log this claim
+            _c::getCollection($this->name . ".history")->insert(["address" => $this->address, "hand" => $revealed, "time" => time()]);
+
+            // clear the table and set the time
+            _c::getCollection("users")->update(["address" => $this->address], ['$unset' => [$this->name . ".deck", $this->name . ".revealed", $this->name . ".burnt", $this->name . ".secret", $this->name . ".hash"], 'time' => time()]);
+
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
         }

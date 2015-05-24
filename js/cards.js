@@ -45,8 +45,8 @@ btcFaucetApp.controller('LuckyJokerCtrl', ['$scope', '$http', '$notice', functio
     $scope.getBurntCards = function() {
         return new Array($scope.burntCards);
     };
-    $scope.getMultiplier = function(cards) {
-        return 6 - cards;
+    $scope.getMultiplier = function() {
+        return 6 - $('#hand').children().length;
     };
     $scope.countHand = function() {
         return $('#hand').children().length;

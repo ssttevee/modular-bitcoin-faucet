@@ -7,6 +7,7 @@ $revealedjs = implode("','", $revealed == null ? [] : $revealed);
     <?= $top_bar ?>
     <h1>Lucky Joker.</h1>
     Drag up to 5 cards to the green area to reveal.<br>
+    You may also drag cards to the flame to burn them.<br>
     You get a multiplier for the cards you reveal and the combos you make.<br>
     Click collect when you are satisfied with your cards.<br>
     Hint: You don't have to reveal all 5 cards to get the most satoshi.<br><br><br>
@@ -25,7 +26,7 @@ $revealedjs = implode("','", $revealed == null ? [] : $revealed);
     </div>
     <br>
     <p>
-        Cards: {{countHand()}}&nbsp;&nbsp;&nbsp;&nbsp;Multiplier: {{6 - revealedCards.length}}x&nbsp;&nbsp;&nbsp;&nbsp;Combo Multiplier: {{comboMultiplier}}x&nbsp;&nbsp;&nbsp;&nbsp;Satoshi: {{getSatoshiValue()}}
+        Cards: {{countHand()}}&nbsp;&nbsp;&nbsp;&nbsp;Multiplier: {{getMultiplier()}}x&nbsp;&nbsp;&nbsp;&nbsp;Combo Multiplier: {{comboMultiplier}}x&nbsp;&nbsp;&nbsp;&nbsp;Satoshi: {{getSatoshiValue()}}
     </p>
     <br>
     <div id="hand">
