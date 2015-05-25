@@ -54,14 +54,14 @@ html {
     position: absolute;
     left: 0;
     background: url(../assets/logo.png) no-repeat;
-    background-size: contain;
-    z-index: -20; }
+    background-size: contain; }
     .header .logo.sad {
       background-image: url(../assets/logo-404.png); }
   .header .ad {
     position: absolute;
     top: 5px;
-    right: 0; }
+    right: 0;
+    z-index: initial; }
 
 .content {
   margin: 0 auto;
