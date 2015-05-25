@@ -29,6 +29,6 @@ if($faucet->satoshi() < 1) {
         </div>
         <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div><br>
         <input type="submit" value="Collect">
-        <button onclick="window.history.back()">Cancel</button>
+        <button onclick="location.href='./<?= $_GET["game"] ?>.html'">Cancel</button>
     </form>
 </div>
