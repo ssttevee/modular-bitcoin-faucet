@@ -6,6 +6,8 @@
             <input id="paytoshi" type="radio" name="microwallet_service" value="paytoshi" ng-model="mwalletservice" ng-disabled="spinningDown"><label for="paytoshi">Paytoshi</label>
             <input id="faucetbox" type="radio" name="microwallet_service" value="faucetbox" ng-model="mwalletservice" ng-disabled="spinningDown"><label for="faucetbox">FaucetBOX</label>
         </div>
+        <br>
+        <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
         <div id="acwidget"></div>
         <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div><br>
         <input type="submit" value="Withdraw to {{mwalletservice}}">
