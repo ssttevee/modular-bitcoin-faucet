@@ -31,13 +31,15 @@ $revealedjs = implode("','", $revealed == null ? [] : $revealed);
         <div style="clear:both;"></div>
     </div>
     <br>
+    <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
     <p>
         Cards: {{countHand()}}&nbsp;&nbsp;&nbsp;&nbsp;Multiplier: {{getMultiplier()}}x&nbsp;&nbsp;&nbsp;&nbsp;Combo Multiplier: {{comboMultiplier}}x&nbsp;&nbsp;&nbsp;&nbsp;Satoshi: {{getSatoshiValue()}}
     </p>
-    <br>
     <div id="hand">
         <div ng-repeat="cardId in revealedCards" class="card animate" ng-class="cardId"></div>
     </div>
+    <br>
+    <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div>
     <br>
     <button onclick="location.href='./collect-lucky-joker.html'">Collect {{getSatoshiValue()}} Satoshi</button><br>
 </div>
