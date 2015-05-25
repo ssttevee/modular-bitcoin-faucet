@@ -168,7 +168,7 @@ class CardsFaucet extends BaseFaucet {
             $value = substr($card, 1);
             $amount += ($value == "A" ? 14 : ($value == "T" ? 10 : ($value == "J" ? 11 : ($value == "Q" ? 12 : ($value == "K" ? 13 : ($value == "oker" ? 26 : intval($value) ) ) ) ) ) );
         }
-        return $amount * (6 - count($revealed))/2 * $this->getComboMultiplier($revealed);
+        return $amount * (6 - count($revealed)) * $this->getComboMultiplier($revealed);
     }
 
     function claim() {
