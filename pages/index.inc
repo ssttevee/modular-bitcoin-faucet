@@ -12,7 +12,7 @@
         <li><a href="./lucky-joker.html">Lucky Joker</a></li>
     </ul>
 
-    <h2>Refer and get 10% of every dispense!</h2>
+    <h2>Refer and get 25% of every dispense!</h2>
     Your referral link:<br>
-    <input id="ref-url" type="text" value="<?= $base_url ?>?r={{btcAddress}}" onclick="$(this).select();">
+    <input id="ref-url" type="text" size="55" value="<?= $base_url ?>?r={{btcAddress}}" onclick="$(this).select();">
 </div>
