@@ -41,7 +41,7 @@ abstract class BaseFaucet {
         $charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         $nonce = "";
         for($i = 0; $i < $length; $i++) {
-            $nonce .= substr($charset, mt_rand(0, count($charset) - 1), 1);
+            $nonce .= substr($charset, mt_rand(0, strlen($charset) - 1), 1);
         }
         return $nonce;
     }

@@ -1,6 +1,8 @@
 <?php
-
+ob_start();
 require_once __DIR__ . "/vendor/autoload.php";
+
+use AllTheSatoshi\Util\Config;
 
 if(!array_key_exists("action", $_GET)) _respond("Action was not specified.");
 $action = $_GET["action"];
@@ -35,10 +37,14 @@ if(array_key_exists("game", $_GET)) {
         case "curve-rng":
             $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
             break;
+        case "lucky-joker":
+            $faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
+            break;
         default:
             _respond("Faucet does not exist.");
     }
-    _respond($faucet->ajax($action, $_POST));
+    $output = $faucet->ajax($action, $_POST);
+    _respond(empty($output) ? "Action not allowed" : $output);
 } else {
     if($action == "payout") {
         if (!isset($_POST['utransserv'])) _respond("Payment method was not given.");
@@ -55,11 +61,15 @@ function _respond($response, $success = false) {
     if(is_string($response)) $response = ["message" => $response];
     if(!isset($response["success"])) $response["success"] = $success;
     header('Content-Type: application/json');
+
+    $ob = ob_get_clean();
+    if(!empty($ob)) $response["debug"] = $ob;
+
     die(json_encode($response));
 }
 
 function verifyCaptcha($challenge, $response) {
-    $solvemedia = new \AllTheSatoshi\Util\SolveMedia('V6LOykA9eYCp4Avz38pUBmgekTkhKhPe', 'vw14n7mAbalPHj-7X29.xpwE1yCHaXku');
+    $solvemedia = new \AllTheSatoshi\Util\SolveMedia(Config::ini("captcha_services", "solveMediaPrivateKey"), Config::ini("captcha_services", "solveMediaHashKey"));
     $response = $solvemedia->verify($challenge, $response);
     if(!$response['success']) _respond($response);
 }
