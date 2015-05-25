@@ -6,6 +6,11 @@ else {
     header("Location: ./");
 }
 
+if($faucet->satoshi() < 1) {
+    ob_flush();
+    header("Location: ./" . $_GET["game"] . ".html");
+}
+
 ?>
 <div class="middle left">
     <?= $top_bar ?>
