@@ -182,7 +182,7 @@ class CardsFaucet extends BaseFaucet {
             _c::getCollection($this->name . ".history")->insert(["address" => $this->address, "hand" => $revealed, "time" => new \MongoDate()]);
 
             // clear the table and set the time
-            _c::getCollection("users")->update(["address" => $this->address], ['$set' => [$this->name => ['last_game' => new \MongoDate()]]]);
+            _c::getCollection("users")->update(["address" => $this->address], ['$set' => [$this->name => ['last_game' => new \MongoDate(), "claims" => $this->claims + 1]]]);
 
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
