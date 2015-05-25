@@ -54,6 +54,8 @@ html {
     left: 0;
     background: url(../assets/logo.png) no-repeat;
     background-size: contain; }
+    .header .logo.sad {
+      background-image: url(../assets/logo-404.png); }
   .header .ad {
     position: absolute;
     top: 5px;

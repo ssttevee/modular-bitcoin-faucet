@@ -11,10 +11,13 @@ btcFaucetApp.directive('claimForm', ['$notice', function($notice) {
                     captcha_response: getFormValue(element, 'adcopy_response')
                 }
             }).done(function(json) {
-                $notice.getEventForm({
+                $form = $notice.getEventForm({
                     event: json.success ? "success" : "error",
                     message: json.message
-                }).attr("action", "./" + attrs.game + ".html").submit();
+                });
+                if(json.success) $form.attr("action", "./wait-" + attrs.game + ".html");
+                else $form.attr("action", "./" + attrs.game + ".html");
+                $form.submit();
             });
         };
 

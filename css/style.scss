@@ -61,6 +61,9 @@ html {
     left: 0;
     background: url(../assets/logo.png) no-repeat;
     background-size: contain;
+    &.sad {
+      background-image: url(../assets/logo-404.png);
+    }
   }
   .ad {
     position: absolute;
