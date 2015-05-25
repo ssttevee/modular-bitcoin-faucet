@@ -16,11 +16,7 @@ if($faucet->satoshi() < 1) {
     <?= $top_bar ?>
     <h2>Complete the captcha to collect your <?= $faucet->satoshi() | 0; ?> satoshi.</h2>
     <form action="javascript: void(0);" ng-submit="claim();" claim-form game="<?= $_GET["game"] ?>">
-        <div id="acwidget">
-            <script type="text/javascript"
-                    src="http://api.solvemedia.com/papi/challenge.script?k=<?= \AllTheSatoshi\Util\Config::ini("captcha_services", "solveMediaPublicKey") ?>">
-            </script>
-        </div>
+        <div id="acwidget"></div>
         <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div><br>
         <input type="submit" value="Collect">
         <button onclick="location.href='./<?= $_GET["game"] ?>.html'">Cancel</button>

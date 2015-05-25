@@ -2,6 +2,8 @@ btcFaucetApp.directive('claimForm', ['$notice', function($notice) {
 
     var link = function(scope, element, attrs) {
 
+        setInterval(function() {if($('#acwidget').children().length < 1) ACPuzzle.create('GFWOoXyYExNZgFBgTogSqX3Xgr.qUPWE', 'acwidget')}, 1000);
+
         scope.claim = function() {
             $.ajax("./ajax/" + attrs.game + "/claim.json", {
                 method: "POST",
