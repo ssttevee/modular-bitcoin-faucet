@@ -15,7 +15,7 @@ html {
 }
 .ad {
   position: relative;
-  z-index: -500;
+  z-index: -10;
   &:empty::before {
     content: "";
     color: #aaaaaa;
@@ -62,6 +62,7 @@ html {
     left: 0;
     background: url(../assets/logo.png) no-repeat;
     background-size: contain;
+    z-index: -20;
     &.sad {
       background-image: url(../assets/logo-404.png);
     }

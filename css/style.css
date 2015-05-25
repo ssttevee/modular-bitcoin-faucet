@@ -14,7 +14,7 @@ html {
 
 .ad {
   position: relative;
-  z-index: -500; }
+  z-index: -10; }
   .ad:empty::before {
     content: "";
     color: #aaaaaa;
@@ -54,7 +54,8 @@ html {
     position: absolute;
     left: 0;
     background: url(../assets/logo.png) no-repeat;
-    background-size: contain; }
+    background-size: contain;
+    z-index: -20; }
     .header .logo.sad {
       background-image: url(../assets/logo-404.png); }
   .header .ad {
