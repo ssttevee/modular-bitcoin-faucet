@@ -15,7 +15,6 @@ html {
 }
 .ad {
   position: relative;
-  z-index: -10;
   &:empty::before {
     content: "";
     color: #aaaaaa;
@@ -70,7 +69,6 @@ html {
     position: absolute;
     top: 5px;
     right: 0;
-    z-index: initial;
   }
 }
 .content {

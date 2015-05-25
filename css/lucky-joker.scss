@@ -2,6 +2,7 @@
   display: inline-block;
   width: 140px;
   height: 190px;
+  z-index: 10;
   &:before {
     content: "";
     display: inline-block;
