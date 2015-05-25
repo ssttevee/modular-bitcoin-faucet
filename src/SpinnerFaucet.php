@@ -32,7 +32,7 @@ class SpinnerFaucet extends BaseFaucet {
         if ($action == "spin") {
             if(array_key_exists("curve", $post)) return $this->spin($post['curve']);
             else return "Curve was not specified.";
-        } else if ($action == "claim_spin") {
+        } else if ($action == "claim") {
             if(!$post["is_human"]) return "not_human";
             return $this->claim();
         }
