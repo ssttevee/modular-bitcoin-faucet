@@ -1,6 +1,6 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteRule ^collect-([a-z\-]+)\.html$ index.php?page=claim&game=$1 [L]
-RewriteRule ^wait-([a-z\-]+)\.html$ index.php?page=wait&game=$1 [L]
-RewriteRule ^([a-z\-]+)\.html$ index.php?page=$1 [L]
+RewriteRule ^collect-([a-z\-]+)\.html$ index.php?page=claim&game=$1 [L,QSA]
+RewriteRule ^wait-([a-z\-]+)\.html$ index.php?page=wait&game=$1 [L,QSA]
+RewriteRule ^([a-z\-]+)\.html$ index.php?page=$1 [L,QSA]
 RewriteRule ^ajax/([a-z\-]+)/([a-z\-]+).json$ ajax.php?game=$1&action=$2 [L]
