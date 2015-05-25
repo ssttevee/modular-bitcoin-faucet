@@ -52,7 +52,13 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
     };
     $scope.spinDown = function() {
         if(!$scope.spinningDown) {
-            $http.post("./ajax.php?action=spin", {curve:$scope.formula}).success(function(data) {
+            $.ajax("./ajax/random-number/spin.json", {
+                method: "POST",
+                dataType: "json",
+                data: {
+                    curve: $scope.formula
+                }
+            }).done(function(data) {
                 if(!data.success) {
                     $notice.getEventForm({
                         event: 'error',
@@ -62,7 +68,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
                     $scope.number = data.spin;
                     $scope.remainingSpins = data.tries;
                 }
-            }).error(function(data) {
+            }).fail(function(data) {
                 console.log(data);
                 $notice.getEventForm({
                     event: 'error',
@@ -85,35 +91,7 @@ btcFaucetApp.controller('SpinnerFaucetCtrl', ['$scope', '$http', '$notice', func
             }
         }
     };
-    $scope.claimSpin = function() {
-        $http.post("./ajax.php?action=claim_spin", {'captcha_challenge': ACPuzzle.get_challenge(),'captcha_response': ACPuzzle.get_response()}).success(function(data) {
-            $notice.getEventForm({
-                event: data['success'] ? 'success' : 'error',
-                message: data['message'],
-            }).submit();
-        }).error(function(data) {
-            console.log(data);
-            $notice.getEventForm({
-                event: 'error',
-                message: 'An unknown error has occurred: ' + data,
-            }).submit();
-        });
-    };
     $scope.stopSpin = function() {
         if(!$scope.spinningDown) $scope.spinDown();
-    };
-    $scope.startCountDown = function() {
-        setInterval(function(){
-            $scope.timeLeft--;
-            if($scope.timeLeft < 1) location.reload(true);
-            $scope.$apply();
-        }, 1000);
-    };
-    $scope.secondsToStr = function(seconds) {
-        var hours = (seconds / 60 / 60) | 0;
-        var mins = ((seconds - hours*3600) / 60) | 0;
-        var secs = (seconds - mins*60 - hours*3600);
-
-        return (hours > 0 ? ('00' + hours).slice(-2) + ':' : '') + ('00' + mins).slice(-2) + ':' + ('00' + secs).slice(-2);
     };
 }]);

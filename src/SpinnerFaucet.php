@@ -8,7 +8,8 @@ use AllTheSatoshi\Util\Config as _c;
 class SpinnerFaucet extends BaseFaucet {
 
     function __construct($btcAddress) {
-        parent::__construct("lastSpin", $btcAddress);
+        parent::__construct("rng_spinner", $btcAddress);
+        $this->migrateDB();
     }
 
     function __get($prop) {
@@ -38,29 +39,40 @@ class SpinnerFaucet extends BaseFaucet {
         return "Action not allowed.";
     }
 
+    function migrateDB() {
+        $r = _c::getCollection('users')->findOne(["address" => $this->address], ["lastSpin"]);
+        if(isset($r["lastSpin"])) {
+            $r["lastSpin"]["time"] = new \MongoDate(0);
+            _c::getCollection("users")->update(["address" => $this->address], ['$unset' => ["lastSpin" => ""], '$set' => [$this->name => $r["lastSpin"]]]);
+        }
+    }
+
     function getRemainingTries() {
-        if($this->time == null || $this->time < time() - $this->_cfg("spinInterval")) return $this->_cfg("maxSpins");
-        else return $this->_cfg("maxSpins") - $this->tries;
+        return $this->_cfg("maxSpins") - $this->tries;
+    }
+
+    function isReady() {
+        return $this->getWaitTime() <= 0;
     }
 
     function getWaitTime() {
-        return $this->time - (time() - $this->_cfg("spinInterval"));
+        $time = $this->time;
+        if(empty($time)) return 0;
+        return $time->sec - (time() - _c::ini("general","dispenseInterval"));
     }
 
     function spin($curve) {
-        if($this->time == null || $this->time < time() - $this->_cfg("spinInterval")) {
-            $this->tries = 0;
-        } else if($this->time > time() - $this->_cfg("spinInterval") && $this->tries >= $this->_cfg("maxSpins") ||
-            $this->time > time() - $this->_cfg("spinInterval") && $this->number == null) {
-            return ["success" => false, "message" => "You have run out of tries. You can claim your current number or wait 10 minutes before spinning again.", "spin" => null, "tries" => $this->_cfg("maxSpins") - $this->tries];
+        if($this->getWaitTime() > 0) {
+            return ["message" => "You have already collected satoshi from this minigame, try again in 10 minutes.", "spin" => null, "tries" => $this->getRemainingTries()];
+        } else if($this->getRemainingTries() < 1) {
+            return ["message" => "You have run out of tries, please collect your satoshi.", "spin" => null, "tries" => $this->getRemainingTries()];
         }
 
         $this->number = mt_rand() / mt_getrandmax() * $this->_cfg("bonusChance");
-        $this->time = time();
         $this->tries++;
         $this->curve = $curve;
 
-        return ["success" => true, "message" => "You got " . ($this->number | 0) . "!", "spin" => $this->number | 0, "tries" => $this->_cfg("maxSpins") - $this->tries];
+        return ["success" => true, "message" => "You got " . ($this->number | 0) . "!", "spin" => $this->number | 0, "tries" => $this->getRemainingTries()];
     }
 
     function satoshi() {
@@ -68,6 +80,8 @@ class SpinnerFaucet extends BaseFaucet {
         $max = $this->_cfg("maxBonusAmt");
         $chance = $this->_cfg("bonusChance");
         $x = $this->number;
+
+        if($x == null) return 0;
 
         $formulas = array(
             "fractal" => 'return $base + ($max + $max/$chance)/($x/25 + 1) - $max/$chance;',
@@ -84,11 +98,12 @@ class SpinnerFaucet extends BaseFaucet {
             $amount = $this->satoshi();
 
             $collection = _c::getCollection('spinner.history');
-            $collection->insert(["address" => $this->address, "time" => time(), "number" => $this->number, "curve" => $this->curve, "tries" => $this->tries]);
+            $collection->insert(["address" => $this->address, "time" => new \MongoDate(), "number" => $this->number, "curve" => $this->curve, "tries" => $this->tries]);
 
             $this->number = null;
-            $this->tries = $this->_cfg("maxSpins");
+            $this->tries = 0;
             $this->claims += 1;
+            $this->time = new \MongoDate();
 
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
