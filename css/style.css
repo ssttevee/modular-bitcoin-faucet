@@ -13,7 +13,8 @@ html {
     line-height: 1.4; }
 
 .ad {
-  position: relative; }
+  position: relative;
+  z-index: -500; }
   .ad:empty::before {
     content: "";
     color: #aaaaaa;

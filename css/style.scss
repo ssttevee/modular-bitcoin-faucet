@@ -15,6 +15,7 @@ html {
 }
 .ad {
   position: relative;
+  z-index: -500;
   &:empty::before {
     content: "";
     color: #aaaaaa;
