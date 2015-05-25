@@ -43,6 +43,7 @@ class SpinnerFaucet extends BaseFaucet {
         $r = _c::getCollection('users')->findOne(["address" => $this->address], ["lastSpin"]);
         if(isset($r["lastSpin"])) {
             $r["lastSpin"]["time"] = new \MongoDate(0);
+            $r["lastSpin"]["tries"] = 0;
             _c::getCollection("users")->update(["address" => $this->address], ['$unset' => ["lastSpin" => ""], '$set' => [$this->name => $r["lastSpin"]]]);
         }
     }
