@@ -1,0 +1,23 @@
+ul#games {
+  list-style: none;
+  padding: 0;
+  margin: 7px 0;
+  li {
+    display: inline-block;
+    margin: 7px 0;
+    a {
+      display: block;
+      width: 468px;
+      height: 60px;
+      background-color: #eeeeee;
+      line-height: 60px;
+      color: black;
+      font-weight: bolder;
+      text-decoration: none;
+      font-size: large;
+      &:hover {
+        background-color: #dddddd;
+      }
+    }
+  }
+}
