@@ -101,7 +101,8 @@ html {
       margin-right: 5px; }
     #top-bar span#addr {
       margin-left: 7px;
-      float: none; }
+      float: none;
+      text-align: left; }
     #top-bar span a {
       color: #404040; }
 
