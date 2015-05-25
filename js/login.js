@@ -10,7 +10,7 @@ btcFaucetApp.controller('LoginController', ['$scope', '$http', '$notice', functi
             $notice.getEventForm({
                 event: 'error',
                 message: 'An unknown error has occurred: ' + data,
-            });
+            }).submit();
         });
     }
 }]);

@@ -48,8 +48,9 @@ btcFaucetApp.service('$notice', function() {
     this.getEventForm = function(fields) {
         var $form = $('<form method="post"></form>');
         for(var name in fields) {
-            $form.append($('<input>').attr("name", name).val(fields[name]));
+            $form.append($('<input>').attr("type","hidden").attr("name", name).val(fields[name]));
         }
+        $form.appendTo("body");
         return $form;
     };
 });
