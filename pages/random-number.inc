@@ -21,16 +21,13 @@ $revealedjs = implode("','", $revealed == null ? [] : $revealed);
     <div id="curve-selector">
         <input id="fractal-formula" type="radio" name="formula" value="fractal" ng-model="formula" ng-disabled="spinningDown"><label for="fractal-formula">Fractal</label>
         <input id="radical-formula" type="radio" name="formula" value="radical" ng-model="formula" ng-disabled="spinningDown"><label for="radical-formula">Radical</label>
-    </div>
+    </div><br>
+    <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
     <div id="rng-spinner" ng-init="startSpin();">{{getSpinnerText(tempNumber)}}</div>
     <div>= {{getSatoshiValue(tempNumber, formula)}} satoshi</div>
     <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div><br>
     <button ng-click="stopSpin()" ng-hide="spinningDown">Stop</button>
     <span ng-show="spinDownDone">{{remainingSpins}} tries left<br></span>
     <button ng-click="lastSpin = null;number = null;startSpin()" ng-show="spinDownDone" ng-disabled="remainingSpins < 1">Try Again</button>
-    <button onclick="location.href='./collect-random-number.html'" ng-show="spinDownDone">Collect {{getSatoshiValue(tempNumber, formula)}} Satoshi</button><br><br>
-    <div class="ad banner" style="margin: 0 auto;"><?php AdManager::insert('bitclix','11724'); ?></div>
-    <h2>Refer and get 10% of every dispense!</h2>
-    Your referral link:<br>
-    <input id="ref-url" type="text" value="<?= $base_url ?>?r={{btcAddress}}" onclick="$(this).select();">
+    <button onclick="location.href='./collect-random-number.html'" ng-show="spinDownDone">Collect {{getSatoshiValue(tempNumber, formula)}} Satoshi</button><br>
 </div>
