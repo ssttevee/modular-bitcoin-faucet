@@ -34,7 +34,7 @@ if(array_key_exists('captcha_challenge', $_POST)) {
 if(array_key_exists("game", $_GET)) {
     $faucet = null;
     switch($_GET["game"]) {
-        case "curve-rng":
+        case "random-number":
             $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
             break;
         case "lucky-joker":

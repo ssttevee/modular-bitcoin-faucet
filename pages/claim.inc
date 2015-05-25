@@ -1,6 +1,6 @@
 <?php
 if($_GET["game"] == "lucky-joker") $faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
-else if($_GET["game"] == "curve-rng") $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
+else if($_GET["game"] == "random-number") $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
 else {
     ob_flush();
     header("Location: ./");
