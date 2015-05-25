@@ -43,8 +43,6 @@ class CardsFaucet extends BaseFaucet {
 
     function __construct($btcAddress) {
         parent::__construct('lucky_joker', $btcAddress);
-
-        if(!$this->isInGame()) $this->newGame(5);
     }
 
     function ajax($action, $post) {
@@ -61,6 +59,16 @@ class CardsFaucet extends BaseFaucet {
             } catch(\Exception $e) {
                 return $e->getMessage();
             }
+        } else if($action == "new-game") {
+            if(!$this->isInGame()) {
+                $shuffle_times = array_key_exists("shuffle_times", $post) ? intval($post["shuffle_times"]) : 5;
+                if($shuffle_times < 1) return "You must shuffle at least once.";
+                else if($shuffle_times > 50) return "You cannot shuffle more than 50 times.";
+                else $this->newGame($shuffle_times);
+                return ["success" => "true", "message" => "You have successfully started a new game."];
+            } else {
+                return "You're already playing.";
+            }
         } else if($action == "claim") {
             if(!$post["is_human"]) return "not_human";
             return $this->claim();
@@ -72,6 +80,7 @@ class CardsFaucet extends BaseFaucet {
     }
 
     function getWaitTime() {
+        if($this->last_game == null) return 0;
         return $this->last_game->sec - (time() - _c::ini("general","dispenseInterval"));
     }
 

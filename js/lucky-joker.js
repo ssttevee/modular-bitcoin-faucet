@@ -68,6 +68,26 @@ btcFaucetApp.controller('LuckyJokerCtrl', ['$scope', '$http', '$notice', functio
         delete $scope.init;
     };
 
+    $scope.startGame = function(shuffle_times) {console.log(shuffle_times);
+        $.ajax("./ajax/lucky-joker/new-game.json", {
+            method: "POST",
+            dataType: "json",
+            data: {
+                shuffle_times: shuffle_times
+            }
+        }).done(function(json) {
+            console.log(json);
+            if(!json['success']) {
+                $notice.getEventForm({
+                    event: "error",
+                    message: json['message']
+                }).submit();
+            } else {
+                window.location.reload();
+            }
+        });
+    };
+
     $scope.$on('cardLift', function(evt, data) {
         var event = data[0], element = data[1];
 
