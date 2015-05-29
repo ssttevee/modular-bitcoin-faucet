@@ -32,17 +32,8 @@ if(array_key_exists('captcha_challenge', $_POST)) {
 }
 
 if(array_key_exists("game", $_GET)) {
-    $faucet = null;
-    switch($_GET["game"]) {
-        case "random-number":
-            $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
-            break;
-        case "lucky-joker":
-            $faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
-            break;
-        default:
-            _respond("Faucet does not exist.");
-    }
+    $module = get_module($_GET["game"]);
+    $faucet = $module->getFaucetInstance($mgr->address);
     $output = $faucet->ajax($action, $_POST);
     _respond(empty($output) ? "Action not allowed" : $output);
 } else {

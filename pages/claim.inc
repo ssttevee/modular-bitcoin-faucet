@@ -1,7 +1,7 @@
 <?php
-if($_GET["game"] == "lucky-joker") $faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
-else if($_GET["game"] == "random-number") $faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
-else {
+$module = get_module($_GET["game"]);
+$faucet = $module->getFaucetInstance($mgr->address);
+if($faucet == null) {
     ob_flush();
     header("Location: ./");
 }
