@@ -5,3 +5,13 @@ function get_module($module) {
     if(file_exists($module)) return include($module);
     return null;
 }
+
+function get_modules() {
+    $modules = [];
+    foreach(scandir("modules") as $dir) {
+        if($dir != "." && $dir != ".." && is_dir("modules/" . $dir)) {
+            $modules[] = $dir;
+        }
+    }
+    return $modules;
+}
