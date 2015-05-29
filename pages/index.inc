@@ -7,9 +7,14 @@
     <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div>
 
     <ul id="games">
-        <li><a href="./random-number.html">Random Number Generator</a></li>
-        <li class="ad banner"><?php AdManager::insert('bitclix','11724'); ?></li>
-        <li><a href="./lucky-joker.html">Lucky Joker</a></li>
+<?php
+$m = 0;
+        foreach(get_modules() as $module) {
+            if($m > 0) echo "        <li class=\"ad banner\"><?php AdManager::insert('bitclix','11724'); ?></li>\n";
+            echo "        <li><a href=\"./" . $module . ".html\">" . get_module($module)->name . "</a></li>\n";
+            $m++;
+        }
+        ?>
     </ul>
 
     <h2>Refer and get 25% of every dispense!</h2>
