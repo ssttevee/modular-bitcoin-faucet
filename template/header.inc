@@ -10,14 +10,22 @@ $base_url = $protocol . $_SERVER['HTTP_HOST'] . join('/',$parts) . '/';
 <head>
     <title>All The Satoshi! - Earn Free Bitcoins!</title>
     <link href="css/style.css" rel="stylesheet"/>
-    <link href="css/<?= $_GET['page'] ?>.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.min.js" type="application/javascript"></script>
     <script src="http://api.solvemedia.com/papi/challenge.ajax"></script>
-<?= $_GET['page'] == 'stats' ? '    <script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.1.5/highcharts.js"></script>' : ''?>
     <script src="js/controller.js" type="application/javascript"></script>
-    <script src="js/<?= $_GET['page'] ?>.js" type="application/javascript"></script>
+<?php
+if(isset($module)) {
+    foreach($module->getPageResources() as $resource) {
+        if(pathinfo($resource, PATHINFO_EXTENSION) == "js") echo "    <script src=\"assets/" . $module->getUrlSlug() . "/" . $resource . "\" type=\"application/javascript\"></script>\n";
+        else echo "    <link href=\"assets/" . $module->getUrlSlug() . "/" . $resource . "\" rel=\"stylesheet\"/>\n";
+    }
+} else {
+    echo "    <link href=\"css/" . $_GET['page'] . ".css\" rel=\"stylesheet\"/>\n";
+    echo "    <script src=\"js/" . $_GET['page'] . ".js\" type=\"application/javascript\"></script>\n";
+}
+?>
     <base href="<?= $base_url ?>">
 </head>
 <body>

@@ -1,6 +1,6 @@
 <?php
 ob_start();
-require_once __DIR__ . "/vendor/autoload.php";
+require_once "autoload.php";
 
 use AllTheSatoshi\Util\Config;
 

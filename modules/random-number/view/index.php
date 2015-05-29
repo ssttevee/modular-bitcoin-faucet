@@ -1,5 +1,4 @@
 <?php
-$faucet = new \AllTheSatoshi\Faucet\SpinnerFaucet($mgr->address);
 
 if(!$faucet->isReady()) {
     ob_flush();

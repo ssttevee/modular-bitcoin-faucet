@@ -1,7 +1,6 @@
 <?php
 
-namespace AllTheSatoshi\Faucet;
-
+use AllTheSatoshi\Faucet\BaseFaucet;
 use AllTheSatoshi\FaucetManager;
 use AllTheSatoshi\Util\Config as _c;
 
@@ -145,7 +144,7 @@ class CardsFaucet extends BaseFaucet {
         if($revealed == null) $revealed = $this->revealed;
         if(empty($revealed)) return 1;
 
-        usort($revealed, ["\\AllTheSatoshi\\Faucet\\CardsFaucet", "compareCards"]);
+        usort($revealed, ["CardsFaucet", "compareCards"]);
 
         $cs = [];
         $cv = [];

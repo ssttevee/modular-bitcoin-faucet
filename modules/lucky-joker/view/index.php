@@ -1,5 +1,4 @@
 <?php
-$faucet = new \AllTheSatoshi\Faucet\CardsFaucet($mgr->address);
 
 if(!$faucet->isReady()) {
     ob_flush();

@@ -8,7 +8,7 @@
     display: inline-block;
     width: 140px;
     height: 190px;
-    background: url('../assets/playing_cards.png') no-repeat;
+    background: url('playing_cards.png') no-repeat;
   }
   &.animate {
     -webkit-transition: all 250ms cubic-bezier(0.175, 0.885, 0.320, 1); /* older webkit */
@@ -243,7 +243,7 @@
       width: 140px;
       height: 190px;
       box-sizing: border-box;
-      background: url(../assets/burn.svg) no-repeat center center transparent;
+      background: url(burn.svg) no-repeat center center transparent;
       background-size: 50px;
       border-radius: 5px;
       border: 5px dashed #dddddd;

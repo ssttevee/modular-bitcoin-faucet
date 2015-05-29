@@ -1,7 +1,6 @@
 <?php
 
-namespace AllTheSatoshi\Faucet;
-
+use AllTheSatoshi\Faucet\BaseFaucet;
 use AllTheSatoshi\FaucetManager;
 use AllTheSatoshi\Util\Config as _c;
 
