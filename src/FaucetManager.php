@@ -18,6 +18,9 @@ class FaucetManager {
         $this->address = $btcAddress;
         $this->createAccount();
 
+        // skip cookies if using cli (aka web socket login);
+        if(PHP_SAPI == "cli") return;
+
         // refresh cookies
         setCookie('btcAddress', $this->address, time()+3600, '/');
         setCookie('satBalance', $this->getBalance(), time()+3600, '/');

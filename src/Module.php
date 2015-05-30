@@ -7,6 +7,7 @@ class Module {
     public $name;
     public $dir;
     public $class;
+    public $useWebSocket = true;
 
     function __construct($dir, $name, $class) {
         $this->dir = $dir;
