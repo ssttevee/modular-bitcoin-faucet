@@ -10,8 +10,9 @@
 <?php
 $m = 0;
         foreach(get_modules() as $module) {
+            $module = get_module($module);
             if($m > 0) echo "        <li class=\"ad banner\"><?php AdManager::insert('bitclix','11724'); ?></li>\n";
-            echo "        <li><a href=\"./" . $module . ".html\">" . get_module($module)->name . "</a></li>\n";
+            echo "        <li><a href=\"./" . $module->getUrlSlug() . ".html\">" . $module->name . "</a></li>\n";
             $m++;
         }
         ?>
