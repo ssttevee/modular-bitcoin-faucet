@@ -1,4 +1,10 @@
 <?php
+
+if(PHP_SAPI != "cli") {
+    header("Location: ./");
+    die();
+}
+
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Ratchet\Server\IoServer;
