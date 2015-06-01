@@ -35,10 +35,7 @@ class ModuleCommunicator implements MessageComponentInterface {
     public function onMessage(ConnectionInterface $conn, $msg) {
         parse_str($msg, $msg);
 
-        if($msg == null) {
-            echo "Connection {$conn->resourceId} sent a bad message\n";
-            $this->respond($conn, "Bad message");
-        } else if($msg["op"] == "login") {
+        if($msg["op"] == "login") {
             if(!array_key_exists("address", $msg)) {
                 echo "Connection {$conn->resourceId} tried to login without specifying a bitcoin address\n";
                 $this->respond($conn, "Bitcoin address not specified");
