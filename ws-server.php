@@ -9,9 +9,11 @@ require __dir__ . "/autoload.php";
 
 class ModuleCommunicator implements MessageComponentInterface {
     protected $clients;
+    protected $key;
 
-    public function __construct() {
+    public function __construct($key) {
         $this->clients = new SplObjectStorage();
+        $this->key = $key;
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -19,6 +21,15 @@ class ModuleCommunicator implements MessageComponentInterface {
         $this->clients[$conn] = new StdClass;
 
         echo "New connection! ({$conn->resourceId})\n";
+
+        if($conn->WebSocket->request->hasHeader('Shutdown')) {
+            $key = $conn->WebSocket->request->getHeader('Shutdown')->__toString();
+            if($this->key == $key) {
+                exit("Kill command received");
+            } else {
+                echo "Connection {$conn->resourceId} tried to kill server with the wrong key: {$key}\n";
+            }
+        }
     }
 
     public function onMessage(ConnectionInterface $conn, $msg) {
@@ -95,7 +106,7 @@ class ModuleCommunicator implements MessageComponentInterface {
 $server = IoServer::factory(
     new HttpServer(
         new WsServer(
-            new ModuleCommunicator()
+            new ModuleCommunicator($argv[1])
         )
     ),
     8080

@@ -1,0 +1,1 @@
+curl -N -H "GET / HTTP/1.1" -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==" -H "Shutdown: $OPENSHIFT_SECRET_TOKEN" 127.0.0.1:8080
