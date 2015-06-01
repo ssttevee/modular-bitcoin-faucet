@@ -20,6 +20,8 @@ class ModuleCommunicator implements MessageComponentInterface {
     public function __construct($key) {
         $this->clients = new SplObjectStorage();
         $this->key = $key;
+
+        echo "WebSocket Server Started\n";
     }
 
     public function onOpen(ConnectionInterface $conn) {
