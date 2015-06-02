@@ -3,20 +3,23 @@
 namespace AllTheSatoshi\Faucet;
 
 use AllTheSatoshi\FaucetManager;
-use AllTheSatoshi\Util\Config as _c;
+use AllTheSatoshi\Util\Config;
 
 abstract class BaseFaucet {
 
     public $address;
     public $name;
 
+    protected $col;
+
     function __construct($faucetName, $btcAddress) {
         $this->name = $faucetName;
         $this->address = $btcAddress;
+        $this->col = Config::getCollection("users");
     }
 
     function __get($prop) {
-        $r = _c::getCollection('users')->findOne(["address" => $this->address], [$this->name.".".$prop]);
+        $r = $this->col->findOne(["address" => $this->address], [$this->name.".".$prop]);
 
         if(empty($r[$this->name])) return null;
         $nested = $r[$this->name];
@@ -27,7 +30,7 @@ abstract class BaseFaucet {
     }
 
     function __set($prop, $val) {
-        _c::getCollection('users')->update(["address" => $this->address], ['$set' => [$this->name.".".$prop => $val]]);
+        $this->col->update(["address" => $this->address], ['$set' => [$this->name.".".$prop => $val]]);
     }
 
     abstract function ajax($action, $post);
