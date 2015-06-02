@@ -41,9 +41,12 @@ class ModuleCommunicator implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $conn, $msg) {
-        parse_str($msg, $msg);
+        $msg = json_decode($msg, true);
 
-        if($msg["op"] == "login") {
+        if(empty($msg) || empty ($msg["op"])) {
+            echo "Connection {$conn->resourceId} sent a bad message\n";
+            $this->respond($conn, "Bad message");
+        } else if($msg["op"] == "login") {
             if(!array_key_exists("address", $msg)) {
                 echo "Connection {$conn->resourceId} tried to login without specifying a bitcoin address\n";
                 $this->respond($conn, "Bitcoin address not specified");
@@ -72,6 +75,7 @@ class ModuleCommunicator implements MessageComponentInterface {
                 $faucet = $module->getFaucetInstance($this->clients[$conn]->manager->address);
                 if(is_callable([$faucet, $msg["op"]]) && $msg["op"] != "__set") {
                     echo "Connection {$conn->resourceId} called ";
+                    if(empty($msg["params"])) $msg["params"] = [];
                     $this->respond($conn, call_user_func_array([$faucet, $msg["op"]], $msg["params"]));
                 } else {
                     echo "Connection {$conn->resourceId} tried to call a non-existent function: ";
@@ -102,9 +106,8 @@ class ModuleCommunicator implements MessageComponentInterface {
 
     private function respond($conn, $response, $success = false) {
         if(is_string($response)) $response = ["message" => $response];
-        if(!isset($response["success"])) $response["success"] = $success;
 
-        $conn->send(http_build_query($response));
+        $conn->send(json_encode($response));
     }
 }
 
