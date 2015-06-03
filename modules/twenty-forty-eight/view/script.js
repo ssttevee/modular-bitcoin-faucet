@@ -4,6 +4,7 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
         ngModel.$setViewValue(0);
 
         var actuator = new HTMLActuator();
+        var moving = false;
 
         var conn = new WebSocket('ws://' + window.location.hostname + ':8351');
         conn.onopen = function(e) {
@@ -23,14 +24,17 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
             actuator.actuate(data.grid, {
                 over: data.gameover
             });
+            moving = false;
         };
 
         $(document).on("keydown", function(e) {
+            if(moving) return;
             var keys = [38, 39, 40, 37]; // up, right, down, left
             for(var i = 0; i < keys.length; i++) {
                 if(e.which == keys[i]) {
                     e.preventDefault();
                     conn.send(JSON.stringify({op:"move",module:"twenty-forty-eight",params:[i]}));
+                    moving = true;
                 }
             }
         });
