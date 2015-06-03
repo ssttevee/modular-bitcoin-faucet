@@ -1,1 +1,0 @@
-php $OPENSHIFT_REPO_DIR/ws-server.php $OPENSHIFT_SECRET_TOKEN&
