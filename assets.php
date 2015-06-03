@@ -1,12 +1,11 @@
 <?php
 
 if(isset($_GET["module"]) && isset($_GET["file"])) {
-    include "modules/modloader.php";
-    include "src/Module.php";
+    include "autoload.php";
 
     $module = get_module($_GET["module"]);
     if (isset($module)) {
-        $file = $module->getViewFile($_GET["file"]);
+        $file = $module->getViewFilePath($_GET["file"]);
         if(isset($file)) {
             $ext = pathinfo($_GET["file"], PATHINFO_EXTENSION);
             $mime = "text/plain";
@@ -18,7 +17,8 @@ if(isset($_GET["module"]) && isset($_GET["file"])) {
                 case "php": header("HTTP/1.0 404 Not Found"); $file = "404 File Not Found."; break;
             }
             header("Content-Type: " . $mime);
-            die($file);
+            if(file_exists($file)) include($file);
+            die(file_exists($file) ? "" : $file);
         }
     }
 }
