@@ -11,6 +11,12 @@ class NumbersFaucet extends BaseFaucet {
     private $game_over = false;
     private $score = false;
 
+    /**
+     * Get all the possible cells in the grid
+     *
+     * @param NumbersFaucet $game instance of 2048
+     * @return array all possible cells in the grid (4x4 by default)
+     */
     private static function allCells(NumbersFaucet $game) {
         $tiles = [];
 
@@ -35,6 +41,9 @@ class NumbersFaucet extends BaseFaucet {
         // TODO: Implement satoshi() method.
     }
 
+    /**
+     * Saves tiles, score, and game status to the database
+     */
     private function save() {
         // Clean tiles
         foreach($this->tiles as &$tile) {
@@ -47,6 +56,9 @@ class NumbersFaucet extends BaseFaucet {
         $this->__set("game_over", $this->game_over);
     }
 
+    /**
+     * Fetches updated tiles, score, and game status
+     */
     private function update() {
         $this->tiles = $this->__get("tiles");
         $this->score = $this->__get("score");
@@ -55,6 +67,9 @@ class NumbersFaucet extends BaseFaucet {
 
     /**
      * Either start a new game or continue an unfinished game
+     *
+     * @param integer $size the size of the grid for new games
+     * @return array response for the web socket client
      */
     function start($size = 4) {
         $this->update();
@@ -79,6 +94,11 @@ class NumbersFaucet extends BaseFaucet {
         $this->addRandomTile();
     }
 
+    /**
+     * Translate tiles to 2048 format
+     *
+     * @return array
+     */
     private function export() {
         $grid = [];
 
@@ -96,7 +116,7 @@ class NumbersFaucet extends BaseFaucet {
      * Push all tiles in the chosen direction
      *
      * @param int $direction 0: up, 1: right, 2: down, 3: left
-     * @return mixed
+     * @return array response for the web socket client
      */
     function move($direction) {
         if($this->game_over) return ["grid" => $this->export(), "game_over" => $this->game_over];
@@ -238,6 +258,9 @@ class NumbersFaucet extends BaseFaucet {
         else return null;
     }
 
+    /**
+     * Add a random tile to to a random empty cell
+     */
     private function addRandomTile() {
         $cells = $this->getEmptyCells();
         if (count($cells) > 0) {
@@ -249,12 +272,17 @@ class NumbersFaucet extends BaseFaucet {
         }
     }
 
+    /**
+     * Empty the cell at the tile's coordinates
+     *
+     * @param $tile
+     */
     private function removeTile($tile) {
         unset($this->tiles[$tile["x"] . "-" . $tile["y"]]);
     }
 
     /**
-     * Set tile value at given x and y
+     * Put the tile in the cell at it's coordinates
      *
      * @param $tile
      */
@@ -280,7 +308,7 @@ class NumbersFaucet extends BaseFaucet {
     /**
      * Get all empty cells
      *
-     * @return array
+     * @return array array of empty cells
      */
     private function getEmptyCells() {
         $empty_cells = self::allCells($this);
@@ -296,7 +324,7 @@ class NumbersFaucet extends BaseFaucet {
     /**
      * Check if there are any moves left
      *
-     * @return bool
+     * @return bool true if there are moves available, false otherwise
      */
     private function movesAvailable() {
         return (
@@ -308,7 +336,7 @@ class NumbersFaucet extends BaseFaucet {
     /**
      * Check whether or not any matches can be made (expensive)
      *
-     * @return bool
+     * @return bool true if at least one matches can be made, false otherwise
      */
     private function hasTileMatches() {
         foreach($this->tiles as $tile) {
