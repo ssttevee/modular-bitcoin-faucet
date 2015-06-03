@@ -7,6 +7,21 @@ class NumbersFaucet extends BaseFaucet {
     const EMPTY_TILE = null;
 
     private $size = 4;
+    private $tiles = [];
+    private $game_over = false;
+    private $score = false;
+
+    private static function allCells(NumbersFaucet $game) {
+        $tiles = [];
+
+        for($x = 0; $x < $game->size; $x++) {
+            for($y = 0; $y < $game->size; $y++) {
+                $tiles["$x-$y"] = ["x" => $x, "y" => $y];
+            }
+        }
+
+        return $tiles;
+    }
 
     function __construct($btcAddress) {
         parent::__construct("2048", $btcAddress);
@@ -20,16 +35,37 @@ class NumbersFaucet extends BaseFaucet {
         // TODO: Implement satoshi() method.
     }
 
+    private function save() {
+        // Clean tiles
+        foreach($this->tiles as &$tile) {
+            unset($tile["mergedFrom"]);
+            unset($tile["previousPosition"]);
+        }
+
+        $this->__set("tiles", $this->tiles);
+        $this->__set("score", $this->score);
+        $this->__set("game_over", $this->game_over);
+    }
+
+    private function update() {
+        $this->tiles = $this->__get("tiles");
+        $this->score = $this->__get("score");
+        $this->game_over = $this->__get("game_over");
+    }
+
     /**
      * Either start a new game or continue an unfinished game
      */
-    function start() {
-        $grid = $this->grid;
-        if(empty($grid)) {
-            $grid = $this->newGame();
+    function start($size = 4) {
+        $this->update();
+
+        if(empty($this->tiles)) {
+            $this->size = $size;
+            $this->newGame();
         }
 
-        return $this->gridToJs($grid);
+        $this->save();
+        return ["grid" => $this->export(), "game_over" => $this->game_over];
     }
 
     /**
@@ -38,70 +74,67 @@ class NumbersFaucet extends BaseFaucet {
      * @return null[][]
      */
     private function newGame() {
+        $this->tiles = [];
+        $this->addRandomTile();
+        $this->addRandomTile();
+    }
+
+    private function export() {
         $grid = [];
+
         for($x = 0; $x < $this->size; $x++) {
             $grid[$x] = [];
             for($y = 0; $y < $this->size; $y++) {
-                $grid[$x][$y] = self::EMPTY_TILE;
+                $grid[$x][$y] = $this->getCellTile(["x" => $x, "y" => $y]);
             }
         }
-        $this->grid = $grid;
-        $this->addRandomTile();
-        $this->addRandomTile();
-        return $this->grid;
-    }
 
-    private function gridToJs($grid = null) {
-        if(empty($grid)) $grid = $this->grid;
-
-
-        $str = "[";
-        foreach($grid as $x) {
-            $str .= "[";
-            foreach($x as $y) {
-                $str .= (isset($y) ? $y : 0) . ", ";
-            }
-            $str .= "],";
-        }
-        $str .= "]";
-
-        return $str;
+        return $grid;
     }
 
     /**
      * Push all tiles in the chosen direction
      *
-     * @param int $direction
+     * @param int $direction 0: up, 1: right, 2: down, 3: left
      * @return mixed
      */
     function move($direction) {
-        // 0: up, 1: right, 2: down, 3: left
+        if($this->game_over) return ["grid" => $this->export(), "game_over" => $this->game_over];
         if(!is_int($direction) || $direction < 0 || $direction > 4) return "Bad direction";
+
+        $this->update();
 
         $moved = false;
         $vector = $this->getVector($direction);
         $traversals = $this->buildTraversals($vector);
 
+        // Prepare tiles for movement
+        foreach($this->tiles as $coord => $tile) {
+            $this->tiles[$coord]["previousPosition"] = ["x" => $tile["x"], "y" => $tile["y"]];
+        }
+
         foreach($traversals["x"] as $x) {
             foreach($traversals["y"] as $y) {
                 $cell = ["x" => $x, "y" => $y];
-                $tile = $this->getCellContent($cell);
+                $tile = $this->getCellTile($cell);
 
                 if(isset($tile)) {
                     $positions = $this->findFarthestPosition($cell, $vector);
-                    $next      = $this->getCellContent($positions["next"]);
+                    $next = $this->getCellTile($positions["next"]);
 
                     // Only one merger per row traversal?
                     if(isset($next) && $next["value"] == $tile["value"] && empty($next["mergedFrom"])) {
-                        $merged = ["x" => $next["x"], "y" => $next["y"], "value" => $next["value"]*2];
-                        $merged["mergedFrom"] = ["tile" => $tile, "next" => $next];
-
-                        $this->setTile($merged);
                         $this->removeTile($tile);
 
                         // Converge the two tiles' positions
                         $tile["x"] = $next["x"];
                         $tile["y"] = $next["y"];
+
+                        $merged = $positions["next"];
+                        $merged["value"] = $tile["value"]*2;
+                        $merged["mergedFrom"] = [$tile, $next];
+
+                        $this->setTile($merged);
 
                         // Update the score
                         $this->score += $merged["value"];
@@ -120,14 +153,15 @@ class NumbersFaucet extends BaseFaucet {
         if($moved) {
             $this->addRandomTile();
 
-            if($this->isGameOver()) {
+            if(!$this->movesAvailable()) {
                 $this->game_over = true;
-                return ["game_over" => true];
             }
 
         }
-        return ["moved" => $moved, "grid" => $this->gridToJs()];
 
+        $export = $this->export();
+        $this->save();
+        return ["grid" => $export, "game_over" => $this->game_over];
     }
 
     /**
@@ -183,7 +217,7 @@ class NumbersFaucet extends BaseFaucet {
             $cell = ["x" => $previous["x"] + $vector["x"], "y" => $previous["y"] + $vector["y"]];
         } while (
             $cell["x"] >= 0 && $cell["x"] < $this->size && $cell["y"] >= 0 && $cell["y"] < $this->size && // check if is in bounds
-            $this->getCellContent($cell) == null // check if next cell is occupied
+            $this->getCellTile($cell) == null // check if next cell is occupied
         );
 
         return [
@@ -193,47 +227,30 @@ class NumbersFaucet extends BaseFaucet {
     }
 
     /**
-     * Get the contents of the specified cell
+     * Get the tile at the specified cell
      *
      * @param array $cell Cell in question
-     * @return array|null tile if is filled, otherwise null
+     * @return array|null tile if is filled, null otherwise
      */
-    private function getCellContent($cell) {
-        if($cell["x"] < 0 || $cell["x"] >= $this->size || $cell["y"] < 0 || $cell["y"] >= $this->size) return null;
-
-        $r = $this->col->findOne(
-            [
-                "address" => $this->address
-            ],
-            [
-                "{$this->name}.grid" => [
-                    "\$slice" => [$cell["x"], 1]
-                ]
-            ]
-        );
-
-        $value = $r[$this->name]["grid"][0][$cell["y"]];
-
-        if(empty($value) || $value == self::EMPTY_TILE) return null;
-
-        $cell["value"] = $value;
-        return $cell;
+    private function getCellTile($cell) {
+        $key = $cell["x"] . "-" . $cell["y"];
+        if(isset($this->tiles[$key])) return $this->tiles[$key];
+        else return null;
     }
 
-    private function addRandomTile($grid = null) {
-        $cells = $this->getEmptyCells($grid);
+    private function addRandomTile() {
+        $cells = $this->getEmptyCells();
         if (count($cells) > 0) {
             $value = mt_rand() / mt_getrandmax() < 0.9 ? 2 : 4;
-            $tile = $cells[mt_rand(0, count($cells) - 1)];
+            $tile = $cells[array_rand($cells)];
             $tile["value"] = $value;
 
-            $this->setTile($tile);
+            $this->tiles[$tile["x"] . "-" . $tile["y"]] = $tile;
         }
     }
 
     private function removeTile($tile) {
-        $tile["value"] = self::EMPTY_TILE;
-        $this->setTile($tile);
+        unset($this->tiles[$tile["x"] . "-" . $tile["y"]]);
     }
 
     /**
@@ -242,38 +259,22 @@ class NumbersFaucet extends BaseFaucet {
      * @param $tile
      */
     private function setTile($tile) {
-        $this->col->update(
-            [
-                "address" => $this->address
-            ],
-            [
-                "\$set" => [
-                    "{$this->name}.grid.{$tile["x"]}.{$tile["y"]}" => $tile["value"]
-                ]
-            ]
-        );
+        $this->tiles[$tile["x"] . "-" . $tile["y"]] = $tile;
     }
 
     /**
-     * Move tile from cell A to cell B
+     * Move tile to given cell
      *
-     * @param $fromTile
-     * @param $toCell
+     * @param $tile
+     * @param $cell
      */
-    private function moveTile(&$fromTile, $toCell) {
-        $this->col->update(
-            [
-                "address" => $this->address
-            ],
-            [
-                "\$set" => [
-                    "{$this->name}.grid.{$fromTile["x"]}.{$fromTile["y"]}" => self::EMPTY_TILE,
-                    "{$this->name}.grid.{$toCell["x"]}.{$toCell["y"]}" => $fromTile["value"]
-                ]
-            ]
-        );
-        $fromTile["x"] = $toCell["x"];
-        $fromTile["y"] = $toCell["y"];
+    private function moveTile(&$tile, $cell) {
+        $this->removeTile($tile);
+
+        $tile["x"] = $cell["x"];
+        $tile["y"] = $cell["y"];
+
+        $this->setTile($tile);
     }
 
     /**
@@ -281,27 +282,26 @@ class NumbersFaucet extends BaseFaucet {
      *
      * @return array
      */
-    private function getEmptyCells($grid = null) {
-        if(empty($grid)) $grid = $this->grid;
-        $empty_cells = [];
+    private function getEmptyCells() {
+        $empty_cells = self::allCells($this);
         for($x = 0; $x < $this->size; $x++) {
             for($y = 0; $y < $this->size; $y++) {
-                if($grid[$x][$y] == self::EMPTY_TILE) $empty_cells[] = ["x" => $x, "y" => $y];
+                if(isset($this->tiles["$x-$y"])) unset($empty_cells["$x-$y"]);
             }
         }
+
         return $empty_cells;
     }
 
     /**
-     * Check whether or not the game is over
+     * Check if there are any moves left
      *
      * @return bool
      */
-    private function isGameOver() {
+    private function movesAvailable() {
         return (
-            $this->game_over || // Game already ended
             count($this->getEmptyCells()) > 0 || // if there are empty cells, game's not over yet
-            $this->hasTileMatches() // matches can be made
+            $this->hasTileMatches() // matches can be made, only check if there are no empty cells
         );
     }
 
@@ -311,16 +311,27 @@ class NumbersFaucet extends BaseFaucet {
      * @return bool
      */
     private function hasTileMatches() {
+        foreach($this->tiles as $tile) {
+            for($direction = 0; $direction < 4; $direction++) {
+                $vector = $this->getVector($direction);
+                $testTile = $this->getCellTile(["x" => $tile["x"] + $vector["x"], "y" => $tile["y"] + $vector["y"]]);
+
+                if($tile["value"] == $testTile["value"]) {
+                    // These two tiles can be merged
+                    return true;
+                }
+            }
+        }
         for($x = 0; $x < $this->size; $x++) {
             for($y = 0; $y < $this->size; $y++) {
-                $tile = $this->getCellContent(["x" => $x, "y" => $y]);
+                $tile = $this->getCellTile(["x" => $x, "y" => $y]);
 
                 if(isset($tile)) {
                     for($direction = 0; $direction < 4; $direction++) {
                         $vector = $this->getVector($direction);
                         $cell = ["x" => $x + $vector["x"], "y" => $y + $vector["y"]];
 
-                        if($tile["value"] == $this->getCellContent($cell)["value"]) {
+                        if($tile["value"] == $this->getCellTile($cell)["value"]) {
                             // These two tiles can be merged
                             return true;
                         }
