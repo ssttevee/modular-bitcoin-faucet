@@ -113,7 +113,7 @@ class NumbersFaucet extends BaseFaucet {
         }
 
         $this->save();
-        return ["grid" => $this->export(), "game_over" => $this->game_over];
+        return ["grid" => $this->export(), "score" => $this->score, "game_over" => $this->game_over];
     }
 
     /**
@@ -152,7 +152,7 @@ class NumbersFaucet extends BaseFaucet {
      * @return array response for the web socket client
      */
     function move($direction) {
-        if($this->game_over) return ["grid" => $this->export(), "game_over" => $this->game_over];
+        if($this->game_over) return ["grid" => $this->export(), "score" => $this->score, "game_over" => $this->game_over];
         if(!is_int($direction) || $direction < 0 || $direction > 4) return "Bad direction";
 
         $this->update();
@@ -215,7 +215,7 @@ class NumbersFaucet extends BaseFaucet {
 
         $export = $this->export();
         $this->save();
-        return ["grid" => $export, "game_over" => $this->game_over];
+        return ["grid" => $export, "score" => $this->score, "game_over" => $this->game_over];
     }
 
     /**

@@ -1,11 +1,9 @@
 btcFaucetApp.directive('twentyFortyEight', [function() {
 
-    var link = function(scope, element, attrs) {
+    var link = function(scope, element, attrs, ngModel) {
+        ngModel.$setViewValue(0);
 
-        var gameover = false;
-        var score = 0;
         var actuator = new HTMLActuator();
-        var grid = [];
 
         var conn = new WebSocket('ws://' + window.location.hostname + ':8351');
         conn.onopen = function(e) {
@@ -21,9 +19,9 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
 
         var onmessage = function(e) {
             var data = JSON.parse(e.data);
-            grid = data.grid;
-            actuator.actuate(grid, {
-                over: gameover
+            ngModel.$setViewValue(data.score);
+            actuator.actuate(data.grid, {
+                over: data.gameover
             });
         };
 
@@ -42,6 +40,7 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
     return {
         restrict: 'C',
         replace: true,
+        require: '?ngModel',
         templateUrl: './assets/twenty-forty-eight/game-container-template.html',
         link: link
     };
