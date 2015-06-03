@@ -57,20 +57,23 @@ class NumbersFaucet extends BaseFaucet {
             $collection = Config::getCollection('2048.history');
             $collection->insert(["address" => $this->address, "time" => new \MongoDate(), "score" => $this->number, "moves" => $this->moves]);
 
-            $this->tiles = null;
-            $this->score = 0;
-            $this->game_over = false;
-            $this->moves = 0;
-            $this->time = new \MongoDate();
-            $this->update();
+            $this->__set("tiles", null);
+            $this->__set("score", 0);
+            $this->__set("game_over", false);
+            $this->__set("moves", 0);
+            $this->__set("time", new \MongoDate());
 
             FaucetManager::_($this->address)->addBalance($amount);
             return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
         }
     }
 
+    function isReady() {
+        return $this->getWaitTime() <= 0;
+    }
+
     function getWaitTime() {
-        if(empty($this->time)) return 0;
+        if($this->time == null) return 0;
         return $this->time->sec - (time() - Config::ini("general","dispenseInterval"));
     }
 

@@ -187,7 +187,6 @@ hr {
     box-sizing: border-box;
 
     .game-message {
-      display: none;
 
       position: absolute;
       top: 0;
@@ -204,7 +203,7 @@ hr {
         font-weight: bold;
         height: 60px;
         line-height: 60px;
-        margin-top: 222px;
+        margin-top: 35px;
         // height: $field-width;
         // line-height: $field-width;
       }
@@ -218,13 +217,9 @@ hr {
         @include button;
         margin-left: 9px;
         // margin-top: 59px;
-
-	&.keep-playing-button {
-	  display: none;
-	}
       }
 
-      @include animation(fade-in 800ms ease $transition-speed * 12);
+      @include animation(fade-in 800ms ease $transition-speed * 6);
       @include animation-fill-mode(both);
 
       &.game-won {

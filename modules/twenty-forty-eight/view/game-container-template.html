@@ -1,9 +1,10 @@
 <div class="game-container">
-    <div class="game-message">
-        <p></p>
-        <div class="lower">
-            <a class="keep-playing-button">Keep going</a>
-            <a class="retry-button">Try again</a>
+    <div class="game-message" ng-hide="!showAds && !gameover">
+        <p ng-show="gameover">Game Over</p>
+        <div style="margin-top: 60px;font-size: 16pt; font-weight: bold;">Please take some time to visit our sponsor</div>
+        <div class="ad large-rectangle" style="margin: 0 auto;"><?php AdManager::insert('a-ads','69629'); ?></div>
+        <div class="lower" ng-hide="gameover">
+            <a class="keep-playing-button" ng-click="showAds = false">Play</a>
         </div>
     </div>
 

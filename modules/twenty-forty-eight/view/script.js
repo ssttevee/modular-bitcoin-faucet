@@ -5,6 +5,10 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
 
         var actuator = new HTMLActuator();
         var moving = false;
+        var timeoutId;
+
+        scope.showAds = true;
+        scope.gameover = false;
 
         var conn = new WebSocket('ws://' + window.location.hostname + ':8351');
         conn.onopen = function(e) {
@@ -20,6 +24,7 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
 
         var onmessage = function(e) {
             var data = JSON.parse(e.data);
+            scope.gameover = data.game_over;
             ngModel.$setViewValue(data.score);
             actuator.actuate(data.grid, {
                 over: data.gameover
@@ -28,7 +33,7 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
         };
 
         $(document).on("keydown", function(e) {
-            if(moving) return;
+            if(moving || scope.showAds || scope.gameover) return;
             var keys = [38, 39, 40, 37]; // up, right, down, left
             for(var i = 0; i < keys.length; i++) {
                 if(e.which == keys[i]) {
@@ -36,6 +41,14 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
                     conn.send(JSON.stringify({op:"move",module:"twenty-forty-eight",params:[i]}));
                     moving = true;
                 }
+            }
+        });
+
+        scope.$watch('showAds', function(newShow) {
+            if(!newShow) {
+                timeoutId = setTimeout(function() { scope.showAds = true; scope.$apply(); }, 90000);
+            } else {
+                clearTimeout(timeoutId);
             }
         });
 
