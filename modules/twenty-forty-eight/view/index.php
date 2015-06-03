@@ -8,4 +8,5 @@
     </p><br><br>
     <p>Satoshi: {{(score/75)| number:0}}&nbsp;&nbsp;&nbsp;&nbsp;Score: {{score}}</p>
     <div class="twenty-forty-eight" ng-model="score" addr="{{btcAddress}}"></div>
+    <button onclick="location.href='./collect-twenty-forty-eight.html'">Collect {{(score/75)| number:0}} Satoshi</button><br>
 </div>
