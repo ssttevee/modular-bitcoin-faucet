@@ -172,6 +172,7 @@ class NumbersFaucet extends BaseFaucet {
 
         if($moved) {
             $this->addRandomTile();
+            $this->moves++;
 
             if(!$this->movesAvailable()) {
                 $this->game_over = true;
