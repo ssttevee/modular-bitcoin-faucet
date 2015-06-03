@@ -322,23 +322,6 @@ class NumbersFaucet extends BaseFaucet {
                 }
             }
         }
-        for($x = 0; $x < $this->size; $x++) {
-            for($y = 0; $y < $this->size; $y++) {
-                $tile = $this->getCellTile(["x" => $x, "y" => $y]);
-
-                if(isset($tile)) {
-                    for($direction = 0; $direction < 4; $direction++) {
-                        $vector = $this->getVector($direction);
-                        $cell = ["x" => $x + $vector["x"], "y" => $y + $vector["y"]];
-
-                        if($tile["value"] == $this->getCellTile($cell)["value"]) {
-                            // These two tiles can be merged
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
 
       return false;
     }
