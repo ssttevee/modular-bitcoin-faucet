@@ -1,6 +1,8 @@
 <?php
 
 use AllTheSatoshi\Faucet\BaseFaucet;
+use AllTheSatoshi\FaucetManager;
+use AllTheSatoshi\Util\Config;
 
 class NumbersFaucet extends BaseFaucet {
 
@@ -31,14 +33,45 @@ class NumbersFaucet extends BaseFaucet {
 
     function __construct($btcAddress) {
         parent::__construct("2048", $btcAddress);
+        $this->update();
     }
 
     function ajax($action, $post) {
-        // TODO: Implement ajax() method.
+        if ($action == "claim") {
+            if(!$post["is_human"]) return "not_human";
+            return $this->claim();
+        }
+        return "Action not allowed.";
     }
 
     function satoshi() {
-        // TODO: Implement satoshi() method.
+        return $this->score / 75;
+    }
+
+    function claim() {
+        if(empty($this->score)) {
+            return ["success" => false, "amount" => 0, "message" => "no satoshi to claim"];
+        } else {
+            $amount = $this->satoshi();
+
+            $collection = Config::getCollection('2048.history');
+            $collection->insert(["address" => $this->address, "time" => new \MongoDate(), "score" => $this->number, "moves" => $this->moves]);
+
+            $this->tiles = null;
+            $this->score = 0;
+            $this->game_over = false;
+            $this->moves = 0;
+            $this->time = new \MongoDate();
+            $this->update();
+
+            FaucetManager::_($this->address)->addBalance($amount);
+            return ["success" => true, "amount" => $amount, "message" => "Successfully added " . $amount . " satoshi to your balance!"];
+        }
+    }
+
+    function getWaitTime() {
+        if(empty($this->time)) return 0;
+        return $this->time->sec - (time() - Config::ini("general","dispenseInterval"));
     }
 
     /**
