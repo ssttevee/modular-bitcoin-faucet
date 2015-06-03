@@ -9,7 +9,7 @@ class NumbersFaucet extends BaseFaucet {
     private $size = 4;
     private $tiles = [];
     private $game_over = false;
-    private $score = false;
+    private $score = 0;
 
     /**
      * Get all the possible cells in the grid
