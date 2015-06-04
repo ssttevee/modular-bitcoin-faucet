@@ -5,7 +5,9 @@ require_once("autoload.php");
 use \AllTheSatoshi\FaucetManager;
 
 
-if(isset($_GET['r']) && (new FaucetManager($_GET['r']))->claimed > 0) setcookie('ref', $_GET['r'], time() + 3600, '/');
+if(isset($_GET['r']) && (new FaucetManager($_GET['r'], false))->alltimebal > 0) {
+    setcookie('ref', $_GET['r'], time() + 3600, '/');
+}
 if(isset($_COOKIE['btcAddress'])) $mgr = FaucetManager::_($_COOKIE['btcAddress']);
 
 

@@ -7,19 +7,19 @@ use AllTheSatoshi\Util\Config as _c;
 class FaucetManager {
     static private $instances = [];
 
-    static public function _($btcAddress) {
-        if(!isset(self::$instances[$btcAddress])) self::$instances[$btcAddress] = new FaucetManager($btcAddress);
+    static public function _($btcAddress, $set_cookie = true) {
+        if(!isset(self::$instances[$btcAddress])) self::$instances[$btcAddress] = new FaucetManager($btcAddress, $set_cookie);
         return self::$instances[$btcAddress];
     }
 
     public $address;
 
-    function __construct($btcAddress) {
+    function __construct($btcAddress, $set_cookie = true) {
         $this->address = $btcAddress;
         $this->createAccount();
 
         // skip cookies if using cli (aka web socket login);
-        if(PHP_SAPI == "cli") return;
+        if(PHP_SAPI == "cli" || !$set_cookie) return;
 
         // refresh cookies
         setCookie('btcAddress', $this->address, time()+3600, '/');
@@ -126,7 +126,7 @@ class FaucetManager {
     function rewardReferrer($referrer, $amount) {
         $amount *= _c::ini("general", "referralReward");
         if(isset($referrer) && strlen($referrer) > 0) {
-            $ref = FaucetManager::_($referrer);
+            $ref = self::_($referrer, false);
             $ref->refbalance += $amount;
             $ref->alltimeref += $amount;
         }
