@@ -10,7 +10,7 @@ btcFaucetApp.directive('twentyFortyEight', [function() {
         scope.showAds = true;
         scope.gameover = false;
 
-        var conn = new WebSocket('ws://' + window.location.hostname + ':8351');
+        var conn = new WebSocket('ws://ws.allthesatoshi.com:18351');
         conn.onopen = function(e) {
             console.log("WebSocket connection established!");
             conn.send(JSON.stringify({op:"login",address:attrs.addr}));

@@ -12,7 +12,7 @@ class Config {
     }
 
     static public function getDatabase() {
-        if(!isset(self::$db)) self::$db = (new \MongoClient("mongodb://" . self::ini("database", "username") . ":" . self::ini("database", "password") . "@" . self::ini("database", "host") . ":" . self::ini("database", "port") . "/"))->btcfaucet;
+        if(!isset(self::$db)) self::$db = (new \MongoClient())->btcfaucet;
         return self::$db;
     }
 
