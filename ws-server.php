@@ -117,7 +117,7 @@ $server = IoServer::factory(
             new ModuleCommunicator($argv[1])
         )
     ),
-    8351
+    18351
 );
 
 $server->run();
